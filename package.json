@@ -1,6 +1,6 @@
 {
   "name": "UI-Exporter",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "description": "Plugin for exporting UI into GameEngine compatible data",
   "author": "Scott Woodhams",
   "license": "Apache-2.0",

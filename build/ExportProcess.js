@@ -12,9 +12,14 @@ async function ExecuteExport() {
     const folder = await uxp_1.storage.localFileSystem.getFolder(initialDomain);
     for (let i = 0; i < layerCount; i++) {
         //@ts-ignore
-        let data = await (0, UILayerData_1.CreateUILayerData)(photoshop_1.app.activeDocument.layers[i]._id);
+        let layerId = photoshop_1.app.activeDocument.layers[i]._id;
+        let data = await (0, UILayerData_1.CreateUILayerData)(layerId);
+        await data.init(layerId);
         dataArray.push(data);
-        if (data.LayerType != UILayerData_1.LayerKind.text && data.LayerType != UILayerData_1.LayerKind.group && data.LayerType != UILayerData_1.LayerKind.groupEnd) {
+        if (data.LayerType == UILayerData_1.LayerKind.text) {
+            continue;
+        }
+        if (data.LayerType != UILayerData_1.LayerKind.group && data.LayerType != UILayerData_1.LayerKind.groupEnd) {
             await ExportImage(data, photoshop_1.app.activeDocument.layers[i], folder);
         }
     }
