@@ -49,7 +49,6 @@ async function ReadFromMetaData(LayerId) {
         "synchronousExecution": false,
         "modalBehavior": "fail"
     });
-    console.log(result[0].metadata.layerXMP);
     return result[0].metadata.layerXMP;
 }
 exports.ReadFromMetaData = ReadFromMetaData;
