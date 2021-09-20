@@ -1,4 +1,14 @@
-import {action, ActionDescriptor, app, PixelValue, TopRightBottomleft, Unit, UnitValue, UVRectangleDescriptor} from "photoshop";
+import {
+    action,
+    ActionDescriptor,
+    app,
+    LayerDescriptor,
+    PixelValue,
+    TopRightBottomleft,
+    Unit,
+    UnitValue,
+    UVRectangleDescriptor
+} from "photoshop";
 import {TextKeyDescriptor} from "photoshop-types/types/TextKey";
 import {PsColor} from "photoshop-types/types/Color";
 import {DropShadowDescriptor, FrameFXDescriptor} from "photoshop-types/types/LayerEffects";
@@ -20,9 +30,9 @@ export enum LayerKind {
     groupEnd = 13
 }
 
-type SliceType = "Normal"| "Slice" | "Tiled"
+export type SliceType = "Normal"| "Slice" | "Tiled"
 
-interface UILayerData {
+export class UILayerData {
 
     //general - required
     Name: string;
@@ -41,17 +51,18 @@ interface UILayerData {
     frameFX?: FrameFXDescriptor;
     dropShadow?: DropShadowDescriptor;
 
+    constructor(LayerID: number) {
+        this.Name = GetLayerProperty(LayerID, 'name');
+        this.LayerType = GetLayerProperty(LayerID, 'layerKind');
+        this.Bounds = GetLayerProperty(LayerID, 'bounds');
+        this.HasLayerEffects = GetLayerProperty(LayerID, 'layerFXVisible');
+    }
 }
 
-const PVZero: PixelValue = {_unit: Unit.pixelsUnit, _value: 0 }
+
 
 export async function CreateUILayerData(LayerID: number) : Promise<UILayerData> {
-    let data: UILayerData = {
-        Name: "PixelLayerTest",
-        LayerType: LayerKind.pixel,
-        Bounds:  {top: PVZero, bottom: PVZero,left: PVZero, right:PVZero, height: PVZero, width: PVZero, _obj: "rectangle"},
-        HasLayerEffects: false
-    };
+    let data: UILayerData = new UILayerData(LayerID)
 
     return data
 }
@@ -125,8 +136,8 @@ async function GetTextType(layerId: number): Promise<"box" | "paint"> {
     return textKey.textShape[0].char._value
 }
 
-/*
-function GetLayerProperty<T extends keyof LayerDescriptor>(layerId: number,_property: string): Promise<LayerDescriptor[T]> {
+
+function GetLayerProperty<T extends keyof LayerDescriptor>(layerId: number,_property: string) {
     const result = action.batchPlay([
         {
             _obj: 'get',
@@ -134,5 +145,7 @@ function GetLayerProperty<T extends keyof LayerDescriptor>(layerId: number,_prop
             _target: [{ _property }, { _ref: 'layer', _id: layerId }],
         },
     ], { synchronousExecution: true })
+
+    // @ts-ignore
     return result[0][_property]
-}*/
+}

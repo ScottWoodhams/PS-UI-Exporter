@@ -20,6 +20,7 @@ var LayerKind;
     LayerKind[LayerKind["groupEnd"] = 13] = "groupEnd";
 })(LayerKind = exports.LayerKind || (exports.LayerKind = {}));
 async function WriteToMetaData(LayerId, data) {
+    let content = JSON.stringify(data);
     await photoshop_1.action.batchPlay([{
             _obj: 'set',
             // @ts-ignore
@@ -29,7 +30,7 @@ async function WriteToMetaData(LayerId, data) {
             ],
             to: {
                 _obj: 'layer',
-                XMPMetadataAsUTF8: data
+                XMPMetadataAsUTF8: content
             }
         }], {});
 }

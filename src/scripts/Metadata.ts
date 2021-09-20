@@ -2,6 +2,7 @@ import {
     action, PixelValue, RGBColorSpace,
     UVRectangleDescriptor
 } from "photoshop";
+import {UILayerData} from "./UILayerData";
 
 export enum LayerKind {
     any = 0,
@@ -20,7 +21,12 @@ export enum LayerKind {
     groupEnd = 13
 }
 
+
+
 export async function WriteToMetaData(LayerId: number, data: UILayerData) {
+
+    let content = JSON.stringify(data);
+
     await action.batchPlay([{
         _obj: 'set',
         // @ts-ignore
@@ -30,7 +36,7 @@ export async function WriteToMetaData(LayerId: number, data: UILayerData) {
         ],
         to: {
             _obj: 'layer',
-            XMPMetadataAsUTF8: data
+            XMPMetadataAsUTF8: content
         }
     }], {})
 }
@@ -53,27 +59,4 @@ export async function ReadFromMetaData(LayerId: number) {
         });
 
     return result[0].metadata.layerXMP;
-}
-
-interface UILayerData {
-    //general
-    Name: string;
-    LayerType: LayerKind;
-    Bounds: UVRectangleDescriptor<PixelValue>;
-
-    //Image specific
-
-    //Text Specific
-    Font?: string;
-    Size?: number;
-    Content?: string;
-
-    //Effects
-    HasShadow: boolean;
-    ShadowColor?: RGBColorSpace;
-    ShadowAngle?: number;
-    HasOutline: boolean;
-    OutlineColor?: RGBColorSpace;
-    OutlineWidth?: number;
-
 }
