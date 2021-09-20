@@ -1,0 +1,10 @@
+.PrototypeDisplay{
+    display: flex;
+    flex-flow: column wrap;
+}
+
+.PrototypeButton {
+    margin-top: 10px;
+    width: 50%;
+    margin-left: 25%;
+}

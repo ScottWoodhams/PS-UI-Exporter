@@ -7,4 +7,11 @@ const { app, action } = window.require('photoshop')
 const { entrypoints } = window.require('uxp')
 
 
-document.getElementById('btnExport').addEventListener('click', ExecuteExport)
+//document.getElementById('btnExport').addEventListener('click', ExecuteExport)
+const btnSetup = document.getElementById('btnSetup')
+const btnExport = document.getElementById('btnExport')
+btnExport.disabled = true
+
+btnSetup.addEventListener('click', InitialSetup)
+btnSetup.addEventListener('click', function () {btnExport.disabled = false})
+btnExport.addEventListener('click', ExecuteExport)
