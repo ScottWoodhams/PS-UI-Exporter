@@ -42,12 +42,16 @@ class UILayerData {
     async init(LayerID) {
         if (this.LayerType == LayerKind.text) {
             this.TextDescriptor = await GetTextKey(LayerID);
+            if (this.HasLayerEffects) {
+                let layerEffects = await GetLayerProperty(LayerID, 'layerEffects');
+                this.frameFX = layerEffects.frameFX;
+                this.dropShadow = layerEffects.dropShadow;
+            }
         }
-        /*    else if(this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd)
-            {
-                this.SliceType = "Normal"
-                this.Slices = {top: 0, right: 0, left: 0, bottom: 0}
-            }*/
+        else if (this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd) {
+            this.SliceType = "Normal";
+            this.Slices = { top: 0, right: 0, left: 0, bottom: 0 };
+        }
     }
 }
 exports.UILayerData = UILayerData;

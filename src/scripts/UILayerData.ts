@@ -11,7 +11,7 @@ import {
 } from "photoshop";
 import {TextKeyDescriptor} from "photoshop-types/types/TextKey";
 import {PsColor} from "photoshop-types/types/Color";
-import {DropShadowDescriptor, FrameFXDescriptor} from "photoshop-types/types/LayerEffects";
+import {DropShadowDescriptor, FrameFXDescriptor, LayerEffectsDescriptor} from "photoshop-types/types/LayerEffects";
 
 export enum LayerKind {
     any = 0,
@@ -60,8 +60,13 @@ export class UILayerData {
 
     public async init(LayerID: number) {
 
-            if(this.LayerType == LayerKind.text) {
-           this.TextDescriptor = await GetTextKey(LayerID)
+        if(this.LayerType == LayerKind.text) {
+            this.TextDescriptor = await GetTextKey(LayerID)
+            if(this.HasLayerEffects) {
+                let layerEffects: LayerEffectsDescriptor = await GetLayerProperty(LayerID, 'layerEffects')
+                this.frameFX = layerEffects.frameFX
+                this.dropShadow = layerEffects.dropShadow
+            }
         }
 
         else if(this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd)
@@ -149,6 +154,8 @@ async function GetTextType(layerId: number): Promise<"box" | "paint"> {
     const textKey = await GetTextKey(0)
     return textKey.textShape[0].char._value
 }
+
+
 
 
 function GetLayerProperty<T extends keyof LayerDescriptor>(layerId: number,_property: string) {
