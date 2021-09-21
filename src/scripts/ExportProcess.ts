@@ -2,6 +2,7 @@
 import {action, app, Direction, Document, DocumentCreateOptions, Layer, Orientation} from "photoshop"
 import {CreateUILayerData, LayerKind, UILayerData} from "./UILayerData";
 import {storage} from "uxp";
+import {ExecuteSlice} from "./Slicing";
 
 
 export async function ExecuteExport() {
@@ -19,12 +20,11 @@ export async function ExecuteExport() {
         dataArray.push(data)
 
         if(data.LayerType == LayerKind.text){
-
-
             continue;
         }
 
         if (data.LayerType != LayerKind.group && data.LayerType != LayerKind.groupEnd) {
+
             await ExportImage(data, app.activeDocument.layers[i], folder);
         }
 
@@ -62,6 +62,11 @@ export async function ExportImage(layerData: UILayerData, layer: Layer,  folder:
 
 
     await layer.duplicate(exportDoc)
+    if(layerData.SliceType != "Normal" && layerData.SliceType != undefined){
+        //@ts-ignore
+        await ExecuteSlice(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 25, false)
+    }
+
 
     const createFileOptions = {overwrite: true}
 

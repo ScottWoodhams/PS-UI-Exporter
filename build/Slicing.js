@@ -94,10 +94,10 @@ async function ReadGuides(documentID) {
 exports.ReadGuides = ReadGuides;
 async function ExecuteSlice(Slices, CanvasWidth, CanvasHeight, DocID, ScalePercent, po2) {
     const ZO = 0;
-    const ST = Slices.Top;
-    const SL = Slices.Left;
-    const SR = Slices.Right;
-    const SB = Slices.Bottom;
+    const ST = Slices.top;
+    const SL = Slices.left;
+    const SR = Slices.right;
+    const SB = Slices.bottom;
     const CH = CanvasHeight;
     const CW = CanvasWidth;
     let ScaleWidth = ScalePercent;

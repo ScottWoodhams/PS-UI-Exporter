@@ -104,12 +104,12 @@ export async function ReadGuides(documentID: number): Promise<TopRightBottomleft
     return {top: Top, right: Right, bottom: Bottom, left: Left}
 }
 
-export async function ExecuteSlice(Slices: Rect, CanvasWidth: number, CanvasHeight: number, DocID: number, ScalePercent: number, po2: boolean) {
+export async function ExecuteSlice(Slices: TopRightBottomleft, CanvasWidth: number, CanvasHeight: number, DocID: number, ScalePercent: number, po2: boolean) {
     const ZO = 0
-    const ST = Slices.Top
-    const SL = Slices.Left
-    const SR = Slices.Right
-    const SB = Slices.Bottom
+    const ST = Slices.top
+    const SL = Slices.left
+    const SR = Slices.right
+    const SB = Slices.bottom
     const CH = CanvasHeight
     const CW = CanvasWidth
     let ScaleWidth = ScalePercent

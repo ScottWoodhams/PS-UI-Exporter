@@ -5,6 +5,7 @@ exports.ExportImage = exports.WriteToJSONFile = exports.ExecuteExport = void 0;
 const photoshop_1 = require("photoshop");
 const UILayerData_1 = require("./UILayerData");
 const uxp_1 = require("uxp");
+const Slicing_1 = require("./Slicing");
 async function ExecuteExport() {
     const layerCount = photoshop_1.app.activeDocument.layers.length;
     let dataArray = [];
@@ -46,6 +47,10 @@ async function ExportImage(layerData, layer, folder) {
         fill: 'transparent'
     });
     await layer.duplicate(exportDoc);
+    if (layerData.SliceType != "Normal" && layerData.SliceType != undefined) {
+        //@ts-ignore
+        await (0, Slicing_1.ExecuteSlice)(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 25, false);
+    }
     const createFileOptions = { overwrite: true };
     //due to discrepancy between entries/blob file/storage file, we go with any type
     let pngFile = await folder.createFile(layerData.Name + '.png', createFileOptions);
