@@ -13,12 +13,22 @@ export async function ExecuteExport() {
 
     for (let i = 0; i < layerCount; i++) {
         //@ts-ignore
-        let data: UILayerData = await CreateUILayerData(app.activeDocument.layers[i]._id);
+        let layerId: number = app.activeDocument.layers[i]._id
+        let data: UILayerData = await CreateUILayerData(layerId);
+        await data.init(layerId)
         dataArray.push(data)
 
-        if (data.LayerType != LayerKind.text && data.LayerType != LayerKind.group && data.LayerType != LayerKind.groupEnd) {
+        if(data.LayerType == LayerKind.text){
+
+
+            continue;
+        }
+
+        if (data.LayerType != LayerKind.group && data.LayerType != LayerKind.groupEnd) {
             await ExportImage(data, app.activeDocument.layers[i], folder);
         }
+
+
     }
 
     console.table(dataArray)

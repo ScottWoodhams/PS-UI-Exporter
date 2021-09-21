@@ -57,6 +57,20 @@ export class UILayerData {
         this.Bounds = GetLayerProperty(LayerID, 'bounds');
         this.HasLayerEffects = GetLayerProperty(LayerID, 'layerFXVisible');
     }
+
+    public async init(LayerID: number) {
+
+            if(this.LayerType == LayerKind.text) {
+           this.TextDescriptor = await GetTextKey(LayerID)
+        }
+
+        else if(this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd)
+        {
+            this.SliceType = "Normal"
+            this.Slices = {top: 0, right: 0, left: 0, bottom: 0}
+        }
+    }
+
 }
 
 
@@ -101,8 +115,8 @@ function CreateAndRunDescriptor(layerId: number, property: string) : ActionDescr
 
 // Text Properties
 
-async function GetTextKey(layerId: number) : Promise<TextKeyDescriptor> {
-    const t = await action.batchPlay([ CreateAndRunDescriptor(layerId, "textKey")])
+export async function GetTextKey(layerId: number) : Promise<TextKeyDescriptor> {
+    const t = await action.batchPlay([ CreateAndRunDescriptor(layerId, "textKey")], { synchronousExecution: true })
     return t[0].textKey
 }
 

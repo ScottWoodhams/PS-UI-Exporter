@@ -1,7 +1,7 @@
 {
   "id": "ui.exporter",
   "name": "UI-Exporter",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "main": "index.html",
   "host": [
     {
@@ -32,7 +32,36 @@
       },
       "label": {
         "default": "Data Setup"
-      }
+      },
+      "icons": [
+        {
+          "width": 23,
+          "height": 23,
+          "path": "icons/dark.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "darkest",
+            "dark",
+            "medium"
+          ]
+        },
+        {
+          "width": 23,
+          "height": 23,
+          "path": "icons/light.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "lightest",
+            "light"
+          ]
+        }
+      ]
     }
   ],
   "icons": [
