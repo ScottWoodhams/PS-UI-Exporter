@@ -60,9 +60,10 @@ export class UILayerData {
 
     public async init(LayerID: number) {
 
-        if(this.LayerType == LayerKind.text) {
+            if(this.LayerType == LayerKind.text) {
            this.TextDescriptor = await GetTextKey(LayerID)
         }
+
         else if(this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd)
         {
             this.SliceType = "Normal"
@@ -114,8 +115,8 @@ function CreateAndRunDescriptor(layerId: number, property: string) : ActionDescr
 
 // Text Properties
 
-async function GetTextKey(layerId: number) : Promise<TextKeyDescriptor> {
-    const t = await action.batchPlay([ CreateAndRunDescriptor(layerId, "textKey")])
+export async function GetTextKey(layerId: number) : Promise<TextKeyDescriptor> {
+    const t = await action.batchPlay([ CreateAndRunDescriptor(layerId, "textKey")], { synchronousExecution: true })
     return t[0].textKey
 }
 
