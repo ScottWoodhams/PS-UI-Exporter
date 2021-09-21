@@ -60,3 +60,11 @@ export async function ReadFromMetaData(LayerId: number) {
 
     return result[0].metadata.layerXMP;
 }
+
+export async function UpdateMetaProperty(LayerID: number, property: string, value:any) {
+    let meta: string = await ReadFromMetaData(LayerID);
+    let metaObj: UILayerData = JSON.parse(meta);
+    // @ts-ignore
+    metaObj[property] = value
+    await WriteToMetaData(LayerID, metaObj);
+}
