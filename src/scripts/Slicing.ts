@@ -1,4 +1,5 @@
-import { action, app, Direction, Document, DocumentCreateOptions, Layer, Orientation} from 'photoshop'
+import {action, app, Document, Layer, Orientation, TopRightBottomleft} from 'photoshop'
+import {UpdateMetaProperty} from "./Metadata";
 
 //----- Setup -----//
 
@@ -24,7 +25,7 @@ export async function Setup() {
 
     await TrimDocument();
     // @ts-ignore
-    const id: number = document._id
+    const id: number = sliceDoc._id
 
     await CreateGuide(id, 0, Orientation.horizontal);
     await CreateGuide(id, 0, Orientation.vertical);
@@ -68,6 +69,16 @@ export class Translation {
     }
 }
 
+//----- Data handling -----//
+export async function ApplyToLayerData() {
+    // @ts-ignore
+    const guides: TopRightBottomleft = await ReadGuides(app.activeDocument._id)
+    app.activeDocument.closeWithoutSaving()
+
+    //@ts-ignore
+    await UpdateMetaProperty( app.activeDocument.activeLayers[0]._id, 'Slices', guides)
+}
+
 //----- Slicing Execution -----//
 export function nearestPowerOf2(n: number) {
     return 1 << 31 - Math.clz32(n);
@@ -75,9 +86,9 @@ export function nearestPowerOf2(n: number) {
 
 export async function CalculatePowerOfSize(documentID: number)
 {
-    const guides: Rect = await ReadGuides(documentID)
-    const widthDelta =  guides.Right - guides.Left
-    const heightDelta =  guides.Bottom - guides.Top
+    const guides: TopRightBottomleft = await ReadGuides(documentID)
+    const widthDelta =  guides.right - guides.left
+    const heightDelta =  guides.bottom - guides.top
 
     let newWidth = nearestPowerOf2(widthDelta)
     let newHeight = nearestPowerOf2(heightDelta)
@@ -85,12 +96,12 @@ export async function CalculatePowerOfSize(documentID: number)
     return { newWidth, newHeight }
 }
 
-export async function ReadGuides(documentID: number): Promise<Rect> {
+export async function ReadGuides(documentID: number): Promise<TopRightBottomleft> {
     let Top: number = Math.floor(await GetGuide(documentID, 1));
     let Left: number = Math.floor(await GetGuide(documentID, 2));
     let Bottom: number = Math.floor(await GetGuide(documentID, 3));
     let Right: number = Math.floor(await GetGuide(documentID, 4));
-    return new Rect(Top, Left, Bottom, Right)
+    return {top: Top, right: Right, bottom: Bottom, left: Left}
 }
 
 export async function ExecuteSlice(Slices: Rect, CanvasWidth: number, CanvasHeight: number, DocID: number, ScalePercent: number, po2: boolean) {
