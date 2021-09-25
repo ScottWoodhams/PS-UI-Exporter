@@ -68,6 +68,8 @@ async function ApplyToLayerData() {
     photoshop_1.app.activeDocument.closeWithoutSaving();
     //@ts-ignore
     await (0, Metadata_1.UpdateMetaProperty)(photoshop_1.app.activeDocument.activeLayers[0]._id, 'Slices', guides);
+    //@ts-ignore
+    await (0, Metadata_1.UpdateMetaProperty)(photoshop_1.app.activeDocument.activeLayers[0]._id, 'SliceType', "Sliced");
 }
 exports.ApplyToLayerData = ApplyToLayerData;
 //----- Slicing Execution -----//
@@ -102,6 +104,7 @@ async function ExecuteSlice(Slices, CanvasWidth, CanvasHeight, DocID, ScalePerce
     const CW = CanvasWidth;
     let ScaleWidth = ScalePercent;
     let ScaleHeight = ScalePercent;
+    console.table({ ST, SL, SR, SB, CH, CW, ScaleWidth, ScaleHeight });
     if (po2) {
         let newSize = await CalculatePowerOfSize(DocID);
         ScaleWidth = CW / newSize.newWidth;

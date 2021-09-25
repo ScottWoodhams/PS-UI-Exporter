@@ -1,5 +1,6 @@
 import {action, app, Document, Layer, Orientation, TopRightBottomleft} from 'photoshop'
 import {UpdateMetaProperty} from "./Metadata";
+import {SliceType} from "./UILayerData";
 
 //----- Setup -----//
 
@@ -77,6 +78,8 @@ export async function ApplyToLayerData() {
 
     //@ts-ignore
     await UpdateMetaProperty( app.activeDocument.activeLayers[0]._id, 'Slices', guides)
+    //@ts-ignore
+    await UpdateMetaProperty( app.activeDocument.activeLayers[0]._id, 'SliceType', "Sliced")
 }
 
 //----- Slicing Execution -----//
@@ -114,6 +117,8 @@ export async function ExecuteSlice(Slices: TopRightBottomleft, CanvasWidth: numb
     const CW = CanvasWidth
     let ScaleWidth = ScalePercent
     let ScaleHeight = ScalePercent
+
+    console.table({ST, SL, SR, SB, CH, CW, ScaleWidth,ScaleHeight})
 
     if(po2) {
         let newSize = await CalculatePowerOfSize(DocID)

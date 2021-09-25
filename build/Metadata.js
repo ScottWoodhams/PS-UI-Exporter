@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateMetaProperty = exports.ReadFromMetaData = exports.WriteToMetaData = exports.LayerKind = void 0;
+exports.GetMetaProperty = exports.UpdateMetaProperty = exports.ReadFromMetaData = exports.WriteToMetaData = exports.LayerKind = void 0;
 const photoshop_1 = require("photoshop");
 var LayerKind;
 (function (LayerKind) {
@@ -61,4 +61,11 @@ async function UpdateMetaProperty(LayerID, property, value) {
     await WriteToMetaData(LayerID, metaObj);
 }
 exports.UpdateMetaProperty = UpdateMetaProperty;
+async function GetMetaProperty(LayerID, property) {
+    let meta = await ReadFromMetaData(LayerID);
+    let metaObj = JSON.parse(meta);
+    // @ts-ignore
+    return metaObj[property];
+}
+exports.GetMetaProperty = GetMetaProperty;
 //# sourceMappingURL=Metadata.js.map

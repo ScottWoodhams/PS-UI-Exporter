@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetTextKey = exports.GetLayerDesc = exports.CreateUILayerData = exports.UILayerData = exports.LayerKind = void 0;
 const photoshop_1 = require("photoshop");
+const Metadata_1 = require("./Metadata");
 var LayerKind;
 (function (LayerKind) {
     LayerKind[LayerKind["any"] = 0] = "any";
@@ -49,8 +50,8 @@ class UILayerData {
             }
         }
         else if (this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd) {
-            this.SliceType = "Normal";
-            this.Slices = { top: 0, right: 0, left: 0, bottom: 0 };
+            this.SliceType = await (0, Metadata_1.GetMetaProperty)(LayerID, 'SliceType');
+            this.Slices = await (0, Metadata_1.GetMetaProperty)(LayerID, 'Slices');
         }
     }
 }
