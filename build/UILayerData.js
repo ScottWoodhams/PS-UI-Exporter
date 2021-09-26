@@ -42,7 +42,14 @@ class UILayerData {
     }
     async init(LayerID) {
         if (this.LayerType == LayerKind.text) {
-            this.TextDescriptor = await GetTextKey(LayerID);
+            let textKeyDes = await GetTextKey(LayerID);
+            this.TextDescriptor = {
+                fontName: textKeyDes.textStyleRange[0].textStyle.fontName,
+                size: textKeyDes.textStyleRange[0].textStyle.size,
+                textKey: textKeyDes.textKey,
+                type: textKeyDes.textShape[0].char,
+                color: textKeyDes.textStyleRange[0].textStyle.color
+            };
             if (this.HasLayerEffects) {
                 let layerEffects = await GetLayerProperty(LayerID, 'layerEffects');
                 this.frameFX = layerEffects.frameFX;
@@ -57,12 +64,11 @@ class UILayerData {
 }
 exports.UILayerData = UILayerData;
 async function CreateUILayerData(LayerID) {
-    let data = new UILayerData(LayerID);
-    return data;
+    return new UILayerData(LayerID);
 }
 exports.CreateUILayerData = CreateUILayerData;
 async function GetLayerDesc(layerID) {
-    const result = await photoshop_1.action.batchPlay([
+    return await photoshop_1.action.batchPlay([
         {
             _obj: "get",
             //@ts-ignore
@@ -74,7 +80,6 @@ async function GetLayerDesc(layerID) {
             _options: { dialogOptions: "dontDisplay" }
         }
     ], { "synchronousExecution": false, "modalBehavior": "fail" });
-    return result;
 }
 exports.GetLayerDesc = GetLayerDesc;
 function CreateAndRunDescriptor(layerId, property) {
