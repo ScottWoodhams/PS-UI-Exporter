@@ -5,14 +5,14 @@ import {
     LayerDescriptor,
     PixelValue,
     TopRightBottomleft,
-    Unit,
-    UnitValue,
     UVRectangleDescriptor
 } from "photoshop";
-import {TextKeyDescriptor} from "photoshop-types/types/TextKey";
+import {CharEnum, TextKeyDescriptor} from "photoshop-types/types/TextKey";
 import {PsColor} from "photoshop-types/types/Color";
 import {DropShadowDescriptor, FrameFXDescriptor, LayerEffectsDescriptor} from "photoshop-types/types/LayerEffects";
-import {GetMetaProperty, ReadFromMetaData} from "./Metadata";
+import {GetMetaProperty} from "./Metadata";
+import {AlignmentEnum} from "photoshop-types/types/Geometry";
+import {PointValue} from "photoshop-types/types/Unit";
 
 export enum LayerKind {
     any = 0,
@@ -31,7 +31,7 @@ export enum LayerKind {
     groupEnd = 13
 }
 
-export type SliceType = "None"| "Sliced" | "Tiled"
+export type SliceType = "None" | "Sliced" | "Tiled"
 
 export class UILayerData {
 
@@ -46,7 +46,7 @@ export class UILayerData {
     SliceType?: SliceType;
 
     //Text Specific
-    TextDescriptor?: TextKeyDescriptor;
+    TextDescriptor: TextDescriptor | undefined;
 
     //outline
     frameFX?: FrameFXDescriptor;
@@ -61,32 +61,44 @@ export class UILayerData {
 
     public async init(LayerID: number) {
 
-        if(this.LayerType == LayerKind.text) {
-            this.TextDescriptor = await GetTextKey(LayerID)
-            if(this.HasLayerEffects) {
+        if (this.LayerType == LayerKind.text) {
+            let textKeyDes: TextKeyDescriptor = await GetTextKey(LayerID)
+            this.TextDescriptor = {
+                fontName: textKeyDes.textStyleRange[0].textStyle.fontName,
+                size: textKeyDes.textStyleRange[0].textStyle.size,
+                textKey: textKeyDes.textKey,
+                type: textKeyDes.textShape[0].char,
+                color: textKeyDes.textStyleRange[0].textStyle.color
+            }
+
+            if (this.HasLayerEffects) {
                 let layerEffects: LayerEffectsDescriptor = await GetLayerProperty(LayerID, 'layerEffects')
                 this.frameFX = layerEffects.frameFX
                 this.dropShadow = layerEffects.dropShadow
             }
-        }
-
-        else if(this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd)
-        {
-            this.SliceType = await GetMetaProperty(LayerID,'SliceType')
-            this.Slices = await GetMetaProperty(LayerID,'Slices')
+        } else if (this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd) {
+            this.SliceType = await GetMetaProperty(LayerID, 'SliceType')
+            this.Slices = await GetMetaProperty(LayerID, 'Slices')
         }
     }
 
 }
 
-export async function CreateUILayerData(LayerID: number) : Promise<UILayerData> {
-    let data: UILayerData = new UILayerData(LayerID)
+interface TextDescriptor {
+    fontName: string
+    size: PointValue
+    textKey: string
+    color: PsColor
+    align?: AlignmentEnum
+    type: CharEnum
+}
 
-    return data
+export async function CreateUILayerData(LayerID: number): Promise<UILayerData> {
+    return new UILayerData(LayerID)
 }
 
 export async function GetLayerDesc(layerID: number) {
-    const result = await action.batchPlay(
+    return await action.batchPlay(
         [
             {
                 _obj: "get",
@@ -94,18 +106,16 @@ export async function GetLayerDesc(layerID: number) {
                 _target: [
                     {_ref: "layer", _id: layerID},
                     //@ts-ignore
-                    { _ref: "document", _id: app.activeDocument._id }
+                    {_ref: "document", _id: app.activeDocument._id}
                 ],
-                _options: { dialogOptions: "dontDisplay"}
+                _options: {dialogOptions: "dontDisplay"}
             }
-        ],{ "synchronousExecution": false, "modalBehavior": "fail"});
-
-    return result
+        ], {"synchronousExecution": false, "modalBehavior": "fail"})
 
 }
 
 
-function CreateAndRunDescriptor(layerId: number, property: string) : ActionDescriptor {
+function CreateAndRunDescriptor(layerId: number, property: string): ActionDescriptor {
     return {
         _obj: 'get',
         //@ts-ignore
@@ -119,8 +129,8 @@ function CreateAndRunDescriptor(layerId: number, property: string) : ActionDescr
 
 // Text Properties
 
-export async function GetTextKey(layerId: number) : Promise<TextKeyDescriptor> {
-    const t = await action.batchPlay([ CreateAndRunDescriptor(layerId, "textKey")], { synchronousExecution: true })
+export async function GetTextKey(layerId: number): Promise<TextKeyDescriptor> {
+    const t = await action.batchPlay([CreateAndRunDescriptor(layerId, "textKey")], {synchronousExecution: true})
     return t[0].textKey
 }
 
@@ -155,16 +165,14 @@ async function GetTextType(layerId: number): Promise<"box" | "paint"> {
 }
 
 
-
-
-function GetLayerProperty<T extends keyof LayerDescriptor>(layerId: number,_property: string) {
+function GetLayerProperty<T extends keyof LayerDescriptor>(layerId: number, _property: string) {
     const result = action.batchPlay([
         {
             _obj: 'get',
             //@ts-ignore
-            _target: [{ _property }, { _ref: 'layer', _id: layerId }],
+            _target: [{_property}, {_ref: 'layer', _id: layerId}],
         },
-    ], { synchronousExecution: true })
+    ], {synchronousExecution: true})
 
     // @ts-ignore
     return result[0][_property]
