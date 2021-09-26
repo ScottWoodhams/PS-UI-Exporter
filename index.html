@@ -9,17 +9,18 @@
 
 <!-- Component Dialog -->
 <dialog id="dialog-component">
-  <sp-heading size="L" style="margin: 0">⌗ Component Setup!</sp-heading>
+  <sp-heading size="L" style="margin: 0">Component Setup!</sp-heading>
   <sp-divider size="large" style="margin:10px 0"></sp-divider>
-  <sp-body>Input the name of the component here. When laoded in engine the layer will be swapped out for the component referenced in engine!</sp-body>
+  <sp-body>Input the name of the component here. When loaded in engine the layer will be swapped out for the component referenced in engine!</sp-body>
+  <sp-textfield id="ComponentName" placeholder="Type Component name here."></sp-textfield>
   <div class="row" style="justify-content: flex-end; margin-top:30px">
     <sp-action-button variant="secondary"
                style="margin-right:10px"
-               onclick="document.querySelector('#dialog-component').close('NOPE')">
+               onclick="document.querySelector('#dialog-component').close('Cancel')">
       ❌Cancel
     </sp-action-button>
     <sp-action-button variant="primary"
-               onclick="document.querySelector('#dialog-component').close('OK')">
+               onclick="document.querySelector('#dialog-component').close(document.getElementById('ComponentName').value)">
       ✔️Ok
     </sp-action-button>
     <!-- ESC will return "reasonCanceled" -->

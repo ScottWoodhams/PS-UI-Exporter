@@ -1,10 +1,13 @@
 // this refers to connecting to an outside library of components stored in-engine.
 
+import {UpdateMetaProperty} from "./Metadata";
+import {app} from "photoshop";
+
 /**
  * Open up the component dialog inorder to assign the layer to a component
  * @constructor
  */
-export async function OpenModelDialog(){
+export async function OpenModelDialog() {
     const componentDialog = document.getElementById('dialog-component')
     //@ts-ignore
     const r = await componentDialog?.uxpShowModal({
@@ -17,7 +20,12 @@ export async function OpenModelDialog(){
 
     })
 
-    console.log(r)
+    if(r !== 'Cancel' || r !== 'reasonCanceled') {
+        //@ts-ignore
+        let layerId: number = app.activeDocument.activeLayers[0]._id
+        await UpdateMetaProperty(layerId, 'IsComponent', true)
+        await UpdateMetaProperty(layerId, 'Component', r)
+    }
 }
 
 /**
