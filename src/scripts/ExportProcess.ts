@@ -2,7 +2,7 @@
 import {action, app, Direction, Document, DocumentCreateOptions, Layer, Orientation} from "photoshop"
 import {CreateUILayerData, LayerKind, UILayerData} from "./UILayerData";
 import {storage} from "uxp";
-import {ExecuteSlice} from "./Slicing";
+import {ExecuteSlice, Rasterize, TrimDocument} from "./Slicing";
 
 
 export async function ExecuteExport() {
@@ -24,11 +24,8 @@ export async function ExecuteExport() {
         }
 
         if (data.LayerType != LayerKind.group && data.LayerType != LayerKind.groupEnd) {
-
             await ExportImage(data, app.activeDocument.layers[i], folder);
         }
-
-
     }
 
     console.table(dataArray)
@@ -51,9 +48,14 @@ export async function WriteToJSONFile(jsonString: string, folder: storage.Folder
 
 export async function ExportImage(layerData: UILayerData, layer: Layer,  folder: storage.Folder) {
 
+    console.log("ExportingImage")
+
+
+    //we use the document height and width then trim due to a position offset happening when duplicating the layer
+    // meaning a part of the image gets clipped
     let exportDoc: Document = <Document>await app.createDocument({
-        width: layerData.Bounds.width._value,
-        height:  layerData.Bounds.height._value,
+        width: app.activeDocument.width,
+        height:  app.activeDocument.height,
         resolution: 72,
         // @ts-ignore
         mode: 'RGBColorMode',
@@ -61,10 +63,15 @@ export async function ExportImage(layerData: UILayerData, layer: Layer,  folder:
     })
 
 
-    await layer.duplicate(exportDoc)
-    if(layerData.SliceType != "Normal" && layerData.SliceType != undefined){
+    let dupedLayer = await layer.duplicate(exportDoc)
+    //@ts-ignore
+    await Rasterize(dupedLayer._id)
+    await TrimDocument()
+
+    console.log(layerData.SliceType)
+    if(layerData.SliceType == "Sliced") {
         //@ts-ignore
-        await ExecuteSlice(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 25, false)
+        await ExecuteSlice(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 16, false)
     }
 
 

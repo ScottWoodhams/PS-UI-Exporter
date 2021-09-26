@@ -47,14 +47,14 @@ class Rect {
 }
 exports.Rect = Rect;
 class Translation {
-    WidthPercent = 0;
-    HeightPercent = 0;
+    Width = 0;
+    Height = 0;
     XDelta = 0;
     YDelta = 0;
     Anchor = Anchor.AnchorN;
-    constructor(WidthPercent, HeightPercent, XDelta, YDelta, Anchor) {
-        this.WidthPercent = WidthPercent;
-        this.HeightPercent = HeightPercent;
+    constructor(Width, Height, XDelta, YDelta, Anchor) {
+        this.Width = Width;
+        this.Height = Height;
         this.XDelta = XDelta;
         this.YDelta = YDelta;
         this.Anchor = Anchor;
@@ -68,6 +68,8 @@ async function ApplyToLayerData() {
     photoshop_1.app.activeDocument.closeWithoutSaving();
     //@ts-ignore
     await (0, Metadata_1.UpdateMetaProperty)(photoshop_1.app.activeDocument.activeLayers[0]._id, 'Slices', guides);
+    //@ts-ignore
+    await (0, Metadata_1.UpdateMetaProperty)(photoshop_1.app.activeDocument.activeLayers[0]._id, 'SliceType', "Sliced");
 }
 exports.ApplyToLayerData = ApplyToLayerData;
 //----- Slicing Execution -----//
@@ -85,14 +87,14 @@ async function CalculatePowerOfSize(documentID) {
 }
 exports.CalculatePowerOfSize = CalculatePowerOfSize;
 async function ReadGuides(documentID) {
-    let Top = Math.floor(await GetGuide(documentID, 1));
-    let Left = Math.floor(await GetGuide(documentID, 2));
-    let Bottom = Math.floor(await GetGuide(documentID, 3));
-    let Right = Math.floor(await GetGuide(documentID, 4));
+    let Top = Math.ceil(await GetGuide(documentID, 1));
+    let Left = Math.ceil(await GetGuide(documentID, 2));
+    let Bottom = Math.ceil(await GetGuide(documentID, 3));
+    let Right = Math.ceil(await GetGuide(documentID, 4));
     return { top: Top, right: Right, bottom: Bottom, left: Left };
 }
 exports.ReadGuides = ReadGuides;
-async function ExecuteSlice(Slices, CanvasWidth, CanvasHeight, DocID, ScalePercent, po2) {
+async function ExecuteSlice(Slices, CanvasWidth, CanvasHeight, DocID, CenterPixelSize, po2) {
     const ZO = 0;
     const ST = Slices.top;
     const SL = Slices.left;
@@ -100,8 +102,9 @@ async function ExecuteSlice(Slices, CanvasWidth, CanvasHeight, DocID, ScalePerce
     const SB = Slices.bottom;
     const CH = CanvasHeight;
     const CW = CanvasWidth;
-    let ScaleWidth = ScalePercent;
-    let ScaleHeight = ScalePercent;
+    let ScaleWidth = CenterPixelSize;
+    let ScaleHeight = CenterPixelSize;
+    console.table({ ST, SL, SR, SB, CH, CW, ScaleWidth, ScaleHeight });
     if (po2) {
         let newSize = await CalculatePowerOfSize(DocID);
         ScaleWidth = CW / newSize.newWidth;
@@ -115,21 +118,26 @@ async function ExecuteSlice(Slices, CanvasWidth, CanvasHeight, DocID, ScalePerce
     const EE = new Rect(ST, SR, SB, CW);
     const NE = new Rect(ZO, SR, ST, CW);
     const CB = new Rect(ST, SL, SB, SR);
-    const NTranslation = new Translation(ScaleWidth, 100, 0, 0, Anchor.AnchorW);
-    const WTranslation = new Translation(100, ScaleHeight, 0, 0, Anchor.AnchorN);
-    const CTranslation = new Translation(ScaleWidth, ScaleHeight, 0, 0, Anchor.AnchorNW);
-    const CenterWidth = SR - SL;
-    const CenterHeight = SB - ST;
-    const XMove = -((CenterWidth) - (CenterWidth) * (ScaleWidth / 100));
-    const YMove = -((CenterHeight) - (CenterHeight) * (ScaleHeight / 100));
-    const ETranslation = new Translation(100, ScaleHeight, XMove, 0, Anchor.AnchorNW);
-    const STranslation = new Translation(ScaleWidth, 100, 0, YMove, Anchor.AnchorNW);
-    const NETranslation = new Translation(100, 100, XMove, 0, Anchor.AnchorW);
-    const SWTranslation = new Translation(100, 100, 0, YMove, Anchor.AnchorN);
-    const SETranslation = new Translation(100, 100, XMove, YMove, Anchor.AnchorNW);
+    const NNPercent = await GetPercentDelta(CenterPixelSize, NN);
+    const NTranslation = new Translation(NNPercent.Width, 100, 0, 0, Anchor.AnchorW);
+    const WWPercent = await GetPercentDelta(CenterPixelSize, WW);
+    const WTranslation = new Translation(100, WWPercent.Height, 0, 0, Anchor.AnchorN);
+    const CPercent = await GetPercentDelta(CenterPixelSize, CB);
+    const CTranslation = new Translation(CPercent.Width, CPercent.Height, 0, 0, Anchor.AnchorNW);
     await SelectAndTranslate(NN, NTranslation, DocID);
     await SelectAndTranslate(WW, WTranslation, DocID);
     await SelectAndTranslate(CB, CTranslation, DocID);
+    const CenterWidth = SR - SL;
+    const CenterHeight = SB - ST;
+    const XMove = -(CenterWidth - CenterPixelSize);
+    const YMove = -(CenterHeight - CenterPixelSize);
+    const EPercent = await GetPercentDelta(CenterPixelSize, EE);
+    const ETranslation = new Translation(100, EPercent.Height, XMove, 0, Anchor.AnchorNW);
+    const SPercent = await GetPercentDelta(CenterPixelSize, EE);
+    const STranslation = new Translation(SPercent.Width, 100, 0, YMove, Anchor.AnchorNW);
+    const NETranslation = new Translation(100, 100, XMove, 0, Anchor.AnchorW);
+    const SWTranslation = new Translation(100, 100, 0, YMove, Anchor.AnchorN);
+    const SETranslation = new Translation(100, 100, XMove, YMove, Anchor.AnchorNW);
     await SelectAndTranslate(EE, ETranslation, DocID);
     await SelectAndTranslate(SS, STranslation, DocID);
     await SelectAndTranslate(NE, NETranslation, DocID);
@@ -138,6 +146,11 @@ async function ExecuteSlice(Slices, CanvasWidth, CanvasHeight, DocID, ScalePerce
     await TrimDocument();
 }
 exports.ExecuteSlice = ExecuteSlice;
+async function GetPercentDelta(CenterPixelSize, Rect) {
+    const widthPercentDelta = (CenterPixelSize / (Rect.Right - Rect.Left)) * 100;
+    const heightPercentDelta = (CenterPixelSize / (Rect.Bottom - Rect.Top)) * 100;
+    return { Width: widthPercentDelta, Height: heightPercentDelta };
+}
 async function SelectAndTranslate(Bounds, Translation, DocID) {
     await Select(Bounds);
     await TranslateSelection(Translation);
@@ -226,6 +239,10 @@ async function Select(Bounds) {
                 bottom: { _unit: 'pixelsUnit', _value: Bounds.Bottom },
                 right: { _unit: 'pixelsUnit', _value: Bounds.Right }
             },
+            feather: {
+                "_unit": "pixelsUnit",
+                "_value": 0
+            },
             _isCommand: false,
             _options: { dialogOptions: 'dontDisplay' }
         }
@@ -257,9 +274,9 @@ async function TranslateSelection(Translation) {
                 horizontal: { _unit: 'pixelsUnit', _value: Translation.XDelta },
                 vertical: { _unit: 'pixelsUnit', _value: Translation.YDelta }
             },
-            width: { _unit: 'percentUnit', _value: Translation.WidthPercent },
-            height: { _unit: 'percentUnit', _value: Translation.HeightPercent },
-            interfaceIconFrameDimmed: { _enum: 'interpolationType', _value: '"nearestNeighbor"' },
+            width: { _unit: 'percentUnit', _value: Translation.Width },
+            height: { _unit: 'percentUnit', _value: Translation.Height },
+            interfaceIconFrameDimmed: { _enum: 'interpolationType', _value: 'nearestNeighbor' },
             _isCommand: false,
             _options: { dialogOptions: 'dontDisplay' }
         }

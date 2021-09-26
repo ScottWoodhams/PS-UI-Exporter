@@ -1,5 +1,6 @@
 import {action, app, Document, Layer, Orientation, TopRightBottomleft} from 'photoshop'
 import {UpdateMetaProperty} from "./Metadata";
+import {SliceType} from "./UILayerData";
 
 //----- Setup -----//
 
@@ -54,19 +55,24 @@ export class Rect {
 }
 
 export class Translation {
-    WidthPercent: number = 0
-    HeightPercent: number = 0
+    Width: number = 0
+    Height: number = 0
     XDelta: number = 0
     YDelta: number = 0
     Anchor: Anchor = Anchor.AnchorN
 
-    constructor(WidthPercent: number, HeightPercent:number, XDelta: number, YDelta: number, Anchor: Anchor) {
-        this.WidthPercent = WidthPercent
-        this.HeightPercent = HeightPercent;
+    constructor(Width: number, Height:number, XDelta: number, YDelta: number, Anchor: Anchor) {
+        this.Width = Width
+        this.Height = Height;
         this.XDelta = XDelta;
         this.YDelta = YDelta;
         this.Anchor = Anchor;
     }
+}
+
+interface PercentDelta  {
+    Width: number
+    Height: number
 }
 
 //----- Data handling -----//
@@ -77,6 +83,8 @@ export async function ApplyToLayerData() {
 
     //@ts-ignore
     await UpdateMetaProperty( app.activeDocument.activeLayers[0]._id, 'Slices', guides)
+    //@ts-ignore
+    await UpdateMetaProperty( app.activeDocument.activeLayers[0]._id, 'SliceType', "Sliced")
 }
 
 //----- Slicing Execution -----//
@@ -97,14 +105,14 @@ export async function CalculatePowerOfSize(documentID: number)
 }
 
 export async function ReadGuides(documentID: number): Promise<TopRightBottomleft> {
-    let Top: number = Math.floor(await GetGuide(documentID, 1));
-    let Left: number = Math.floor(await GetGuide(documentID, 2));
-    let Bottom: number = Math.floor(await GetGuide(documentID, 3));
-    let Right: number = Math.floor(await GetGuide(documentID, 4));
+    let Top: number = Math.ceil(await GetGuide(documentID, 1));
+    let Left: number = Math.ceil(await GetGuide(documentID, 2));
+    let Bottom: number = Math.ceil(await GetGuide(documentID, 3));
+    let Right: number = Math.ceil(await GetGuide(documentID, 4));
     return {top: Top, right: Right, bottom: Bottom, left: Left}
 }
 
-export async function ExecuteSlice(Slices: TopRightBottomleft, CanvasWidth: number, CanvasHeight: number, DocID: number, ScalePercent: number, po2: boolean) {
+export async function ExecuteSlice(Slices: TopRightBottomleft, CanvasWidth: number, CanvasHeight: number, DocID: number, CenterPixelSize: number, po2: boolean) {
     const ZO = 0
     const ST = Slices.top
     const SL = Slices.left
@@ -112,8 +120,10 @@ export async function ExecuteSlice(Slices: TopRightBottomleft, CanvasWidth: numb
     const SB = Slices.bottom
     const CH = CanvasHeight
     const CW = CanvasWidth
-    let ScaleWidth = ScalePercent
-    let ScaleHeight = ScalePercent
+    let ScaleWidth = CenterPixelSize
+    let ScaleHeight = CenterPixelSize
+
+    console.table({ST, SL, SR, SB, CH, CW, ScaleWidth,ScaleHeight})
 
     if(po2) {
         let newSize = await CalculatePowerOfSize(DocID)
@@ -130,34 +140,48 @@ export async function ExecuteSlice(Slices: TopRightBottomleft, CanvasWidth: numb
     const NE = new Rect(ZO, SR, ST, CW)
     const CB = new Rect(ST, SL, SB, SR)
 
-    const NTranslation = new Translation(ScaleWidth, 100, 0, 0, Anchor.AnchorW);
-    const WTranslation = new Translation(100, ScaleHeight, 0, 0, Anchor.AnchorN);
-    const CTranslation = new Translation(ScaleWidth, ScaleHeight, 0,0, Anchor.AnchorNW)
+    const NNPercent : PercentDelta = await GetPercentDelta(CenterPixelSize, NN)
+    const NTranslation = new Translation(NNPercent.Width, 100, 0, 0, Anchor.AnchorW);
 
-    const CenterWidth = SR - SL
-    const CenterHeight = SB - ST
+    const WWPercent : PercentDelta = await GetPercentDelta(CenterPixelSize, WW)
+    const WTranslation = new Translation(100, WWPercent.Height, 0, 0, Anchor.AnchorN);
 
-    const XMove = -((CenterWidth) - (CenterWidth) * (ScaleWidth / 100))
-    const YMove = -((CenterHeight) - (CenterHeight) * (ScaleHeight / 100))
-
-    const ETranslation = new Translation(100, ScaleHeight, XMove, 0, Anchor.AnchorNW)
-    const STranslation = new Translation(ScaleWidth,100, 0, YMove, Anchor.AnchorNW)
-    const NETranslation = new Translation(100,100, XMove,  0, Anchor.AnchorW)
-    const SWTranslation = new Translation(100, 100, 0, YMove, Anchor.AnchorN)
-    const SETranslation = new Translation(100, 100,XMove, YMove, Anchor.AnchorNW)
+    const CPercent : PercentDelta = await GetPercentDelta(CenterPixelSize, CB)
+    const CTranslation = new Translation(CPercent.Width, CPercent.Height, 0, 0, Anchor.AnchorNW)
 
     await SelectAndTranslate(NN, NTranslation, DocID)
     await SelectAndTranslate(WW, WTranslation, DocID)
     await SelectAndTranslate(CB, CTranslation, DocID)
 
+    const CenterWidth = SR - SL
+    const CenterHeight = SB - ST
+
+    const XMove = -(CenterWidth - CenterPixelSize)
+    const YMove = -(CenterHeight - CenterPixelSize)
+
+    const EPercent : PercentDelta = await GetPercentDelta(CenterPixelSize, EE)
+    const ETranslation = new Translation(100, EPercent.Height, XMove, 0, Anchor.AnchorNW)
+    const SPercent : PercentDelta = await GetPercentDelta(CenterPixelSize, EE)
+    const STranslation = new Translation(SPercent.Width, 100, 0, YMove, Anchor.AnchorNW)
+
+    const NETranslation = new Translation(100, 100, XMove,  0, Anchor.AnchorW)
+    const SWTranslation = new Translation(100, 100, 0, YMove, Anchor.AnchorN)
+    const SETranslation = new Translation(100, 100, XMove, YMove, Anchor.AnchorNW)
+
     await SelectAndTranslate(EE, ETranslation, DocID)
     await SelectAndTranslate(SS, STranslation, DocID)
-
     await SelectAndTranslate(NE, NETranslation, DocID)
     await SelectAndTranslate(SW, SWTranslation, DocID)
     await SelectAndTranslate(SE, SETranslation, DocID)
     await TrimDocument()
 
+}
+
+
+async function GetPercentDelta(CenterPixelSize: number, Rect: Rect) : Promise<PercentDelta> {
+    const widthPercentDelta = (CenterPixelSize / (Rect.Right - Rect.Left)) * 100
+    const heightPercentDelta = (CenterPixelSize / (Rect.Bottom - Rect.Top)) * 100
+    return { Width: widthPercentDelta, Height: heightPercentDelta }
 }
 
 async function SelectAndTranslate (Bounds: Rect, Translation: Translation, DocID: number) {
@@ -258,6 +282,10 @@ export async function Select (Bounds: Rect) {
                     bottom: { _unit: 'pixelsUnit', _value: Bounds.Bottom },
                     right: { _unit: 'pixelsUnit', _value: Bounds.Right }
                 },
+                feather: {
+                    "_unit": "pixelsUnit",
+                    "_value": 0
+                },
                 _isCommand: false,
                 _options: { dialogOptions: 'dontDisplay' }
             }
@@ -291,9 +319,9 @@ export async function TranslateSelection (Translation: Translation) {
                     horizontal: { _unit: 'pixelsUnit', _value: Translation.XDelta },
                     vertical: { _unit: 'pixelsUnit', _value: Translation.YDelta }
                 },
-                width: { _unit: 'percentUnit', _value: Translation.WidthPercent },
-                height: { _unit: 'percentUnit', _value: Translation.HeightPercent },
-                interfaceIconFrameDimmed: { _enum: 'interpolationType', _value: '"nearestNeighbor"' },
+                width: { _unit: 'percentUnit', _value: Translation.Width },
+                height: { _unit: 'percentUnit', _value: Translation.Height },
+                interfaceIconFrameDimmed: { _enum: 'interpolationType', _value: 'nearestNeighbor' },
                 _isCommand: false,
                 _options: { dialogOptions: 'dontDisplay' }
             }

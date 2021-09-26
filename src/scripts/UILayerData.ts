@@ -12,6 +12,7 @@ import {
 import {TextKeyDescriptor} from "photoshop-types/types/TextKey";
 import {PsColor} from "photoshop-types/types/Color";
 import {DropShadowDescriptor, FrameFXDescriptor, LayerEffectsDescriptor} from "photoshop-types/types/LayerEffects";
+import {GetMetaProperty, ReadFromMetaData} from "./Metadata";
 
 export enum LayerKind {
     any = 0,
@@ -30,7 +31,7 @@ export enum LayerKind {
     groupEnd = 13
 }
 
-export type SliceType = "Normal"| "Slice" | "Tiled"
+export type SliceType = "Normal"| "Sliced" | "Tiled"
 
 export class UILayerData {
 
@@ -71,14 +72,12 @@ export class UILayerData {
 
         else if(this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd)
         {
-            this.SliceType = "Normal"
-            this.Slices = {top: 0, right: 0, left: 0, bottom: 0}
+            this.SliceType = await GetMetaProperty(LayerID,'SliceType')
+            this.Slices = await GetMetaProperty(LayerID,'Slices')
         }
     }
 
 }
-
-
 
 export async function CreateUILayerData(LayerID: number) : Promise<UILayerData> {
     let data: UILayerData = new UILayerData(LayerID)

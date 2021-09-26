@@ -38,18 +38,25 @@ async function WriteToJSONFile(jsonString, folder) {
 }
 exports.WriteToJSONFile = WriteToJSONFile;
 async function ExportImage(layerData, layer, folder) {
+    console.log("ExportingImage");
+    //we use the document height and width then trim due to a position offset happening when duplicating the layer
+    // meaning a part of the image gets clipped
     let exportDoc = await photoshop_1.app.createDocument({
-        width: layerData.Bounds.width._value,
-        height: layerData.Bounds.height._value,
+        width: photoshop_1.app.activeDocument.width,
+        height: photoshop_1.app.activeDocument.height,
         resolution: 72,
         // @ts-ignore
         mode: 'RGBColorMode',
         fill: 'transparent'
     });
-    await layer.duplicate(exportDoc);
-    if (layerData.SliceType != "Normal" && layerData.SliceType != undefined) {
+    let dupedLayer = await layer.duplicate(exportDoc);
+    //@ts-ignore
+    await (0, Slicing_1.Rasterize)(dupedLayer._id);
+    await (0, Slicing_1.TrimDocument)();
+    console.log(layerData.SliceType);
+    if (layerData.SliceType == "Sliced") {
         //@ts-ignore
-        await (0, Slicing_1.ExecuteSlice)(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 25, false);
+        await (0, Slicing_1.ExecuteSlice)(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 16, false);
     }
     const createFileOptions = { overwrite: true };
     //due to discrepancy between entries/blob file/storage file, we go with any type
@@ -62,7 +69,7 @@ async function ExportImage(layerData, layer, folder) {
         spotColors: false
     };
     await exportDoc.save(pngFile, saveOptions);
-    await exportDoc.closeWithoutSaving();
+    //await exportDoc.closeWithoutSaving()
 }
 exports.ExportImage = ExportImage;
 //# sourceMappingURL=ExportProcess.js.map

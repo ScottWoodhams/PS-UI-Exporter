@@ -64,7 +64,16 @@ export async function ReadFromMetaData(LayerId: number) {
 export async function UpdateMetaProperty(LayerID: number, property: string, value:any) {
     let meta: string = await ReadFromMetaData(LayerID);
     let metaObj: UILayerData = JSON.parse(meta);
+
     // @ts-ignore
     metaObj[property] = value
     await WriteToMetaData(LayerID, metaObj);
+}
+
+export async function GetMetaProperty(LayerID: number, property: string) : Promise<any> {
+    let meta: string = await ReadFromMetaData(LayerID);
+    let metaObj: UILayerData = JSON.parse(meta);
+    // @ts-ignore
+    return metaObj[property]
+
 }
