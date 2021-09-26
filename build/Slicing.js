@@ -69,7 +69,7 @@ async function ApplyToLayerData() {
     //@ts-ignore
     await (0, Metadata_1.UpdateMetaProperty)(photoshop_1.app.activeDocument.activeLayers[0]._id, 'Slices', guides);
     //@ts-ignore
-    await (0, Metadata_1.UpdateMetaProperty)(photoshop_1.app.activeDocument.activeLayers[0]._id, 'SliceType', "Sliced");
+    await (0, Metadata_1.UpdateMetaProperty)(photoshop_1.app.activeDocument.activeLayers[0]._id, 'SliceType', document.getElementById('sliceOptions').value);
 }
 exports.ApplyToLayerData = ApplyToLayerData;
 //----- Slicing Execution -----//

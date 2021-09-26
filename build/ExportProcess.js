@@ -54,7 +54,7 @@ async function ExportImage(layerData, layer, folder) {
     await (0, Slicing_1.Rasterize)(dupedLayer._id);
     await (0, Slicing_1.TrimDocument)();
     console.log(layerData.SliceType);
-    if (layerData.SliceType == "Sliced") {
+    if (layerData.SliceType == "Sliced" || layerData.SliceType == "Tiled") {
         //@ts-ignore
         await (0, Slicing_1.ExecuteSlice)(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 16, false);
     }
@@ -69,7 +69,7 @@ async function ExportImage(layerData, layer, folder) {
         spotColors: false
     };
     await exportDoc.save(pngFile, saveOptions);
-    //await exportDoc.closeWithoutSaving()
+    await exportDoc.closeWithoutSaving();
 }
 exports.ExportImage = ExportImage;
 //# sourceMappingURL=ExportProcess.js.map

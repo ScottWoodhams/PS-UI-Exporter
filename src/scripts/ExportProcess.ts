@@ -69,7 +69,7 @@ export async function ExportImage(layerData: UILayerData, layer: Layer,  folder:
     await TrimDocument()
 
     console.log(layerData.SliceType)
-    if(layerData.SliceType == "Sliced") {
+    if(layerData.SliceType == "Sliced" || layerData.SliceType == "Tiled") {
         //@ts-ignore
         await ExecuteSlice(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 16, false)
     }

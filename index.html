@@ -10,7 +10,17 @@
   <sp-heading>Prototype</sp-heading>
   <sp-divider></sp-divider>
   <sp-action-button id="btnSetup" class="PrototypeButton">Setup</sp-action-button>
+
   <sp-action-button id="btnSlice" class="PrototypeButton">Slice</sp-action-button>
+
+  <sp-dropdown class="sliceOptions" id="sliceOptions" placeholder="Make a selection...">
+    <sp-menu slot="options">
+      <sp-menu-item>Sliced</sp-menu-item>
+      <sp-menu-item>Tiled</sp-menu-item>
+      <sp-menu-divider></sp-menu-divider>
+      <sp-menu-item>None</sp-menu-item>
+    </sp-menu>
+  </sp-dropdown>
   <sp-action-button id="btnApplySlice" class="PrototypeButton">Apply Slice</sp-action-button>
   <sp-action-button id="btnExport" class="PrototypeButton">Export</sp-action-button>
 </div>

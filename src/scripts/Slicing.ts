@@ -83,8 +83,9 @@ export async function ApplyToLayerData() {
 
     //@ts-ignore
     await UpdateMetaProperty( app.activeDocument.activeLayers[0]._id, 'Slices', guides)
+
     //@ts-ignore
-    await UpdateMetaProperty( app.activeDocument.activeLayers[0]._id, 'SliceType', "Sliced")
+    await UpdateMetaProperty( app.activeDocument.activeLayers[0]._id, 'SliceType', document.getElementById('sliceOptions').value)
 }
 
 //----- Slicing Execution -----//

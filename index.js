@@ -27,3 +27,11 @@ btnApplySlice.addEventListener('click', async function (){
   await ApplyToLayerData()
 })
 
+const sliceDropdown = document.getElementById('sliceOptions')
+
+sliceDropdown.addEventListener("change",() => {
+
+  UpdateMetaProperty(app.activeDocument.activeLayers[0]._id, 'SliceType', sliceDropdown.value)
+})
+
+
