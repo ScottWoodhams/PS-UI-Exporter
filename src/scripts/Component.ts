@@ -14,7 +14,7 @@ export async function OpenModelDialog(){
             width: 464,
             height: 380
         },
-        titleVisibility: 'hide'
+
     })
 
     console.log(r)

@@ -9,20 +9,19 @@
 
 <!-- Component Dialog -->
 <dialog id="dialog-component">
-  <sp-heading size="L" style="margin: 0">👋🏻 Hello there!</sp-heading>
+  <sp-heading size="L" style="margin: 0">⌗ Component Setup!</sp-heading>
   <sp-divider size="large" style="margin:10px 0"></sp-divider>
-  <sp-body>This is a rich modal dialog where you can use all
-    the available UI elements in UXP.</sp-body>
+  <sp-body>Input the name of the component here. When laoded in engine the layer will be swapped out for the component referenced in engine!</sp-body>
   <div class="row" style="justify-content: flex-end; margin-top:30px">
-    <sp-button variant="secondary"
+    <sp-action-button variant="secondary"
                style="margin-right:10px"
                onclick="document.querySelector('#dialog-component').close('NOPE')">
-      Cancel
-    </sp-button>
-    <sp-button variant="primary"
+      ❌Cancel
+    </sp-action-button>
+    <sp-action-button variant="primary"
                onclick="document.querySelector('#dialog-component').close('OK')">
-      Ok
-    </sp-button>
+      ✔️Ok
+    </sp-action-button>
     <!-- ESC will return "reasonCanceled" -->
   </div>
 </dialog>

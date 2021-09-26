@@ -16,10 +16,7 @@ async function OpenModelDialog() {
             width: 464,
             height: 380
         },
-        titleVisibility: 'hide'
     });
-    // @ts-ignore
-    let returnValue = componentDialog.returnValue;
     console.log(r);
 }
 exports.OpenModelDialog = OpenModelDialog;
