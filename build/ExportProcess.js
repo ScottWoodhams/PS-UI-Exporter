@@ -56,7 +56,7 @@ async function ExportImage(layerData, layer, folder) {
     console.log(layerData.SliceType);
     if (layerData.SliceType == "Sliced") {
         //@ts-ignore
-        await (0, Slicing_1.ExecuteSlice)(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 33, false);
+        await (0, Slicing_1.ExecuteSlice)(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 16, false);
     }
     const createFileOptions = { overwrite: true };
     //due to discrepancy between entries/blob file/storage file, we go with any type

@@ -71,7 +71,7 @@ export async function ExportImage(layerData: UILayerData, layer: Layer,  folder:
     console.log(layerData.SliceType)
     if(layerData.SliceType == "Sliced") {
         //@ts-ignore
-        await ExecuteSlice(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 33, false)
+        await ExecuteSlice(layerData.Slices, exportDoc.width, exportDoc.height, exportDoc._id, 16, false)
     }
 
 
@@ -89,5 +89,5 @@ export async function ExportImage(layerData: UILayerData, layer: Layer,  folder:
     }
 
     await exportDoc.save( pngFile, saveOptions)
-    //await exportDoc.closeWithoutSaving()
+    await exportDoc.closeWithoutSaving()
 }
