@@ -31,7 +31,7 @@ export enum LayerKind {
     groupEnd = 13
 }
 
-export type SliceType = "Normal"| "Sliced" | "Tiled"
+export type SliceType = "None"| "Sliced" | "Tiled"
 
 export class UILayerData {
 
