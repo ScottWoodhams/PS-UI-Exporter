@@ -6,7 +6,7 @@ This photoshop plugin will export layers and data to be imported into a game eng
 
 
 ## Engines supported (Separate Repos to be linked)
- - None
+ - https://github.com/ScottWoodhams/UI-Importer-Unreal.git
 
 
 # Development guide
