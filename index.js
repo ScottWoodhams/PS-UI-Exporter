@@ -5,7 +5,9 @@ const {GetLayerDesc, CreateUILayerData, GetTextKey} = require('./build/UILayerDa
 const {InitialSetup} = require('./build/DataManipulation')
 const { app, action } = window.require('photoshop')
 const { entrypoints } = window.require('uxp')
+const {OpenModelDialog} = require('./build/Component')
 const {Setup, ApplyToLayerData} = require('./build/Slicing')
+const {DEBUG_TableLayerData} = require('./build/Debug')
 
 const btnSetup = document.getElementById('btnSetup')
 const btnExport = document.getElementById('btnExport')

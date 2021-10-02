@@ -41,6 +41,9 @@ export class UILayerData {
     Bounds: UVRectangleDescriptor<PixelValue>;
     HasLayerEffects: boolean;
 
+    IsComponent: boolean;
+    Component: string
+
     //Image specific
     Slices?: TopRightBottomleft;
     SliceType?: SliceType;
@@ -57,6 +60,8 @@ export class UILayerData {
         this.LayerType = GetLayerProperty(LayerID, 'layerKind');
         this.Bounds = GetLayerProperty(LayerID, 'bounds');
         this.HasLayerEffects = GetLayerProperty(LayerID, 'layerFXVisible');
+        this.IsComponent = false;
+        this.Component = '';
     }
 
     public async init(LayerID: number) {
@@ -80,6 +85,12 @@ export class UILayerData {
             this.SliceType = await GetMetaProperty(LayerID, 'SliceType')
             this.Slices = await GetMetaProperty(LayerID, 'Slices')
         }
+
+        this.IsComponent = await GetMetaProperty(LayerID, 'IsComponent')
+        if(this.IsComponent){
+            this.Component = await GetMetaProperty(LayerID, 'Component')
+        }
+
     }
 
 }
