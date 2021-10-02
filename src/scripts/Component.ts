@@ -27,11 +27,3 @@ export async function OpenModelDialog() {
         await UpdateMetaProperty(layerId, 'Component', r)
     }
 }
-
-/**
- * Update the layer metadata to assign the component to, checking if the layer is compatible
- * @constructor
- */
-async function UpdateLayerComponent(){
-
-}
