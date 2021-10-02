@@ -2,6 +2,8 @@
 // this refers to connecting to an outside library of components stored in-engine.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OpenModelDialog = void 0;
+const Metadata_1 = require("./Metadata");
+const photoshop_1 = require("photoshop");
 /**
  * Open up the component dialog inorder to assign the layer to a component
  * @constructor
@@ -17,7 +19,12 @@ async function OpenModelDialog() {
             height: 380
         },
     });
-    console.log(r);
+    if (r !== 'Cancel' || r !== 'reasonCanceled') {
+        //@ts-ignore
+        let layerId = photoshop_1.app.activeDocument.activeLayers[0]._id;
+        await (0, Metadata_1.UpdateMetaProperty)(layerId, 'IsComponent', true);
+        await (0, Metadata_1.UpdateMetaProperty)(layerId, 'Component', r);
+    }
 }
 exports.OpenModelDialog = OpenModelDialog;
 /**

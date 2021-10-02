@@ -26,6 +26,8 @@ class UILayerData {
     LayerType;
     Bounds;
     HasLayerEffects;
+    IsComponent;
+    Component;
     //Image specific
     Slices;
     SliceType;
@@ -39,6 +41,8 @@ class UILayerData {
         this.LayerType = GetLayerProperty(LayerID, 'layerKind');
         this.Bounds = GetLayerProperty(LayerID, 'bounds');
         this.HasLayerEffects = GetLayerProperty(LayerID, 'layerFXVisible');
+        this.IsComponent = false;
+        this.Component = '';
     }
     async init(LayerID) {
         if (this.LayerType == LayerKind.text) {
@@ -59,6 +63,10 @@ class UILayerData {
         else if (this.LayerType != LayerKind.group && this.LayerType != LayerKind.groupEnd) {
             this.SliceType = await (0, Metadata_1.GetMetaProperty)(LayerID, 'SliceType');
             this.Slices = await (0, Metadata_1.GetMetaProperty)(LayerID, 'Slices');
+        }
+        this.IsComponent = await (0, Metadata_1.GetMetaProperty)(LayerID, 'IsComponent');
+        if (this.IsComponent) {
+            this.Component = await (0, Metadata_1.GetMetaProperty)(LayerID, 'Component');
         }
     }
 }
