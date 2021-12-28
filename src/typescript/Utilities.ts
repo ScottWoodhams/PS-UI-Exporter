@@ -1,6 +1,7 @@
 import { Bounds } from 'photoshop/dom/objects/Bounds';
 import { Color, Rect } from './PSTypes';
 import { ColorDescriptor, RGBColorDescriptor } from 'photoshop/util/colorTypes';
+import { storage } from 'uxp';
 
 //use this instead of Photoshop "layerKind" type as it does not match with batchplay layerKind get
 export enum ADLayerKind {
@@ -35,18 +36,50 @@ export function RectangleToRect(value: any) {
 
 //convert red-green-blue to HEX value
 export function RGBToHex(red: number, green: number, blue: number) {
-  return "#" + ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
+  return '#' + ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
 }
-
 
 //simplifying data for easier reading and exporting
 export async function ColorDescToColorObj(value: ColorDescriptor) {
-  let Color = { Blue: 0, Green: 0, Hex: "", Red: 0 };
+  let Color = { Blue: 0, Green: 0, Hex: '', Red: 0 };
 
-  console.log("color " + {value});
-/*  Color.Hex = RGBToHex(value, value.grain, value.blue);
+  console.log('color ' + { value });
+  /*  Color.Hex = RGBToHex(value, value.grain, value.blue);
   Color.Red = value.red;
   Color.Green = value.grain;
   Color.Blue = value.blue;*/
   return value;
+}
+
+export async function WriteToJSONFile(jsonString: string, folder: storage.Folder) {
+  const saveOptions = { overwrite: true };
+  const jsonFile = await folder.createFile('PSJson.json', saveOptions);
+
+  const jsonWriteOptions = { format: storage.formats.utf8, append: false };
+  await jsonFile.write(jsonString, jsonWriteOptions);
+
+  return jsonFile;
+}
+
+export async function IsTexture(id: ADLayerKind) {
+  return id == ADLayerKind.pixel || id == 4 || id == 5 || id == 9 || id == 11;
+}
+
+export async function ExportTexture() {
+
+  //todo create export doc
+
+  //todo duplicate image layer to the export doc
+
+  //todo if layer is sliced or tiled -> perform slice operation
+
+  //todo create file options
+
+  //todo create file in folder
+
+  //todo create save options
+
+  //todo save exported document to the created file
+
+  //todo close the export document
 }
