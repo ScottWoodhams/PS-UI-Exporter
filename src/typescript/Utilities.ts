@@ -2,8 +2,17 @@ import { Bounds } from 'photoshop/dom/objects/Bounds';
 import { Color, Rect } from './PSTypes';
 import { ColorDescriptor, RGBColorDescriptor } from 'photoshop/util/colorTypes';
 import { storage } from 'uxp';
+import { action, App, core, Document } from 'photoshop';
+import { DocumentCreateOptions } from 'photoshop/dom/objects/CreateOptions';
+import { DocumentFill, NewDocumentMode, RasterizeType } from 'photoshop/dom/Constants';
+import UILayerData from './UILayerData';
+import { Layer } from 'photoshop/dom/Layer';
+import { InitLayers } from './Metadata';
 
-//use this instead of Photoshop "layerKind" type as it does not match with batchplay layerKind get
+
+const app: App = require('photoshop').app;
+
+//use this instead of Photoshop "layerKind" type as it does not match with batchplay layerKind getter
 export enum ADLayerKind {
   any = 0,
   pixel = 1,
@@ -35,10 +44,12 @@ export function RectangleToRect(value: any) {
 }
 
 //convert red-green-blue to HEX value
+//todo correct this function
 export function RGBToHex(red: number, green: number, blue: number) {
   return '#' + ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
 }
 
+//todo correct this function
 //simplifying data for easier reading and exporting
 export async function ColorDescToColorObj(value: ColorDescriptor) {
   let Color = { Blue: 0, Green: 0, Hex: '', Red: 0 };
@@ -65,21 +76,55 @@ export async function IsTexture(id: ADLayerKind) {
   return id == ADLayerKind.pixel || id == 4 || id == 5 || id == 9 || id == 11;
 }
 
-export async function ExportTexture() {
+export async function TrimDocument() {
+  await action.batchPlay(
+    [
+      {
+        _obj: 'trim',
+        trimBasedOn: { _enum: 'trimBasedOn', _value: 'transparency' },
+        top: true,
+        bottom: true,
+        left: true,
+        right: true,
+        _isCommand: true,
+        _options: { dialogOptions: 'dontDisplay' },
+      },
+    ],
+    {}
+  );
+}
 
-  //todo create export doc
+export async function ExportTexture(layerData: UILayerData, layer: Layer, folder: storage.Folder) {
+  const options: DocumentCreateOptions = {
+    typename: '',
+    fill: DocumentFill.TRANSPARENT,
+    height: app.activeDocument.height,
+    mode: NewDocumentMode.RGB,
+    name: 'Image Export',
+    resolution: app.activeDocument.resolution,
+    width: app.activeDocument.width,
+  };
 
-  //todo duplicate image layer to the export doc
+  let exportDocument: Document = await app.createDocument(options);
 
-  //todo if layer is sliced or tiled -> perform slice operation
+  let duplicatedLayer = await layer.duplicate(exportDocument);
+  await duplicatedLayer.rasterize(RasterizeType.ENTIRELAYER);
+  core.executeAsModal(TrimDocument, { commandName: 'Trimming document' });
 
-  //todo create file options
+  if (layerData.SliceType != 'None') {
+    //todo execute slice operation
+  }
 
-  //todo create file in folder
+  let pngFile: storage.File = await folder.createFile(layerData.Name + '.png', { overwrite: true });
 
-  //todo create save options
+  const saveOptions = {
+    alphaChannels: true,
+    annotations: false,
+    layers: false,
+    embedColorProfile: false,
+    spotColors: false,
+  };
 
-  //todo save exported document to the created file
-
-  //todo close the export document
+  await exportDocument.save(pngFile, saveOptions);
+  await exportDocument.closeWithoutSaving();
 }
