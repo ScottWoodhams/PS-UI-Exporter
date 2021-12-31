@@ -10,6 +10,7 @@ import {storage} from "uxp";
 export type ExportPanelProps = { onFinished: () => void };
 
 export function ExportPanel({ onFinished }: ExportPanelProps) {
+
   async function Finish() {
     const initialDomain = { initialDomain: storage.domains.userDesktop };
     const folder = await storage.localFileSystem.getFolder(initialDomain);
@@ -22,7 +23,7 @@ export function ExportPanel({ onFinished }: ExportPanelProps) {
       data.push(layerData);
 
       if (await IsTexture(layerData.LayerType)) {
-        await ExportTexture();
+        await ExportTexture(layerData, layer, folder);
       }
     }
 

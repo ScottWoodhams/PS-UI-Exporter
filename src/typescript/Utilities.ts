@@ -8,7 +8,7 @@ import { DocumentFill, NewDocumentMode, RasterizeType } from 'photoshop/dom/Cons
 import UILayerData from './UILayerData';
 import { Layer } from 'photoshop/dom/Layer';
 import { InitLayers } from './Metadata';
-
+import {ExecuteSlice} from "./SliceOperation";
 
 const app: App = require('photoshop').app;
 
@@ -112,7 +112,7 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   core.executeAsModal(TrimDocument, { commandName: 'Trimming document' });
 
   if (layerData.SliceType != 'None') {
-    //todo execute slice operation
+    await ExecuteSlice(layerData.Slices, exportDocument.width, exportDocument.height, exportDocument.id, 8);
   }
 
   let pngFile: storage.File = await folder.createFile(layerData.Name + '.png', { overwrite: true });
@@ -128,3 +128,5 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   await exportDocument.save(pngFile, saveOptions);
   await exportDocument.closeWithoutSaving();
 }
+
+//--SLICING--//
