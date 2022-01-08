@@ -3,6 +3,7 @@ module.exports = {
   env: {
     production: {
       only: ['src'],
+
     },
   },
 };

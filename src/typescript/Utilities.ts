@@ -1,16 +1,18 @@
-import { Bounds } from 'photoshop/dom/objects/Bounds';
-import { Color, Rect } from './PSTypes';
-import { ColorDescriptor, RGBColorDescriptor } from 'photoshop/util/colorTypes';
 import { storage } from 'uxp';
-import { action, App, core, Document } from 'photoshop';
-import { DocumentCreateOptions } from 'photoshop/dom/objects/CreateOptions';
-import { DocumentFill, NewDocumentMode, RasterizeType } from 'photoshop/dom/Constants';
-import UILayerData from './UILayerData';
+//import { DocumentFill, NewDocumentMode, RasterizeType } from 'photoshop/dom/Constants';
 import { Layer } from 'photoshop/dom/Layer';
-import { InitLayers } from './Metadata';
-import {ExecuteSlice} from "./SliceOperation";
+import { Document } from 'photoshop/dom/Document';
 
-const app: App = require('photoshop').app;
+import { Rect } from './PSTypes';
+import { ColorDescriptor } from 'photoshop/util/colorTypes';
+
+
+import { DocumentCreateOptions } from 'photoshop/dom/objects/CreateOptions';
+import UILayerData from './UILayerData';
+
+import { ExecuteSlice } from './SliceOperation';
+import {RasterizeType} from "./Constants";
+const app = require('photoshop').app;
 
 //use this instead of Photoshop "layerKind" type as it does not match with batchplay layerKind getter
 export enum ADLayerKind {
@@ -77,7 +79,7 @@ export async function IsTexture(id: ADLayerKind) {
 }
 
 export async function TrimDocument() {
-  await action.batchPlay(
+  await require('photoshop').action.batchPlay(
     [
       {
         _obj: 'trim',
@@ -108,8 +110,8 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   let exportDocument: Document = await app.createDocument(options);
 
   let duplicatedLayer = await layer.duplicate(exportDocument);
-  await duplicatedLayer.rasterize(RasterizeType.ENTIRELAYER);
-  core.executeAsModal(TrimDocument, { commandName: 'Trimming document' });
+  await duplicatedLayer.rasterize(RasterizeType);
+  await require('photoshop').core.executeAsModal(TrimDocument, { commandName: 'Trimming document' });
 
   if (layerData.SliceType != 'None') {
     await ExecuteSlice(layerData.Slices, exportDocument.width, exportDocument.height, exportDocument.id, 8);
@@ -128,5 +130,3 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   await exportDocument.save(pngFile, saveOptions);
   await exportDocument.closeWithoutSaving();
 }
-
-//--SLICING--//

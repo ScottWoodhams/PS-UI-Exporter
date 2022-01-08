@@ -3,11 +3,13 @@ const CopyPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = function(_env, argv) {
-  const isProduction = argv.mode === 'production';
-  const isDevelopment = !isProduction;
-
   return {
-    devtool: isDevelopment && 'cheap-module-source-map',
+    mode: 'development',
+    watch: true,
+    devtool: 'cheap-module-source-map',
+    watchOptions: {
+      ignored: ['node_modules/**'],
+    },
     entry: './src/index.tsx',
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -29,17 +31,8 @@ module.exports = function(_env, argv) {
           resolve: {
             extensions: ['.js', 'jsx', '.ts', '.tsx'],
           },
+          use: 'ts-loader',
           exclude: /(node_modules)/,
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                cacheDirectory: true,
-                cacheCompression: false,
-                envName: isProduction ? 'production' : 'development',
-              },
-            },
-          ],
         },
         {
           test: /\.css$/,

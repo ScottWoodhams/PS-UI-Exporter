@@ -6,6 +6,8 @@ import InitPanel from './Panels/InitPanel';
 import ActionPanel from './Panels/ActionPanel';
 import Spectrum from "react-uxp-spectrum";
 import { ExportPanel } from "./Panels/ExportPanel";
+import {SlicePanel} from "./Panels/SlicePanel";
+import {app} from "photoshop";
 
 
 // eslint-disable-next-line no-shadow
@@ -35,13 +37,20 @@ export default function App() {
     setState({ CurrentPanel: currentPanel });
   }
 
+  function GoToSlicePanel(){
+    let currentPanel = state.CurrentPanel;
+    currentPanel = Panels.Slice;
+    setState({ CurrentPanel: currentPanel });
+  }
+
   return (
     <div className="App">
 
       <sp-label>{Panels[state.CurrentPanel.valueOf()] + " Hi"}</sp-label>
       {state.CurrentPanel === Panels.Initialise && <InitPanel onFinished={GoToActionPanel} />}
-      {state.CurrentPanel === Panels.Action && <ActionPanel onExport={GoToExportPanel}/>}
+      {state.CurrentPanel === Panels.Action && <ActionPanel onExport={GoToExportPanel} onSlice={GoToSlicePanel}/>}
       {state.CurrentPanel === Panels.Export && <ExportPanel onFinished={GoToActionPanel}/>}
+      {state.CurrentPanel === Panels.Slice && <SlicePanel onFinished={GoToActionPanel} layer={app.activeDocument.activeLayers[0]}/>}
 
     </div>
   );
