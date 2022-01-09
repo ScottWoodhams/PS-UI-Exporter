@@ -4,7 +4,6 @@ import { ExportTexture, IsTexture, WriteToJSONFile } from '../typescript/Utiliti
 import { app } from 'photoshop';
 import { ReadFromMetaData } from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
-import { SliceType } from '../typescript/PSTypes';
 import {storage} from "uxp";
 
 export type ExportPanelProps = { onFinished: () => void };

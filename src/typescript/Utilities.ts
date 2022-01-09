@@ -1,38 +1,16 @@
 import { storage } from 'uxp';
-//import { DocumentFill, NewDocumentMode, RasterizeType } from 'photoshop/dom/Constants';
-import { Layer } from 'photoshop/dom/Layer';
-import { Document } from 'photoshop/dom/Document';
 
-import { Rect } from './PSTypes';
-import { ColorDescriptor } from 'photoshop/util/colorTypes';
-
-
-import { DocumentCreateOptions } from 'photoshop/dom/objects/CreateOptions';
 import UILayerData from './UILayerData';
 
 import { ExecuteSlice } from './SliceOperation';
-import {RasterizeType} from "./Constants";
-const app = require('photoshop').app;
+import {app, ColorDescriptor, DocumentCreateOptions, Layer, LayerKindConsts, Rectangle, Document} from 'photoshop';
+import { Rect } from './PSTypes';
 
-//use this instead of Photoshop "layerKind" type as it does not match with batchplay layerKind getter
-export enum ADLayerKind {
-  any = 0,
-  pixel = 1,
-  adjustment = 2,
-  text = 3,
-  vector = 4,
-  smartObject = 5,
-  video = 6,
-  group = 7,
-  threeD = 8,
-  gradient = 9,
-  pattern = 10,
-  solidColor = 11,
-  background = 12,
-  groupEnd = 13,
-}
-
-//simplifying data for easier reading and exporting
+/**
+ * simplifying data for easier reading and exporting
+ * @param value The rectangle to simplify
+ * @constructor
+ */
 export function RectangleToRect(value: any) {
   let Rect: Rect = { bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0 };
 
@@ -74,34 +52,22 @@ export async function WriteToJSONFile(jsonString: string, folder: storage.Folder
   return jsonFile;
 }
 
-export async function IsTexture(id: ADLayerKind) {
-  return id == ADLayerKind.pixel || id == 4 || id == 5 || id == 9 || id == 11;
+/**
+ * Checks if the layer can be exported as a texture based on its type
+ * @param kind The kind of layer
+ * @constructor
+ */
+export async function IsTexture(kind: LayerKindConsts) {
+  return kind == 'pixel' || 'smartObject' || 'solidColor';
 }
 
-export async function TrimDocument() {
-  await require('photoshop').action.batchPlay(
-    [
-      {
-        _obj: 'trim',
-        trimBasedOn: { _enum: 'trimBasedOn', _value: 'transparency' },
-        top: true,
-        bottom: true,
-        left: true,
-        right: true,
-        _isCommand: true,
-        _options: { dialogOptions: 'dontDisplay' },
-      },
-    ],
-    {}
-  );
-}
 
 export async function ExportTexture(layerData: UILayerData, layer: Layer, folder: storage.Folder) {
   const options: DocumentCreateOptions = {
     typename: '',
-    fill: DocumentFill.TRANSPARENT,
+    fill: "transparent",
     height: app.activeDocument.height,
-    mode: NewDocumentMode.RGB,
+    mode: "RGBColorMode",
     name: 'Image Export',
     resolution: app.activeDocument.resolution,
     width: app.activeDocument.width,
@@ -110,8 +76,8 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   let exportDocument: Document = await app.createDocument(options);
 
   let duplicatedLayer = await layer.duplicate(exportDocument);
-  await duplicatedLayer.rasterize(RasterizeType);
-  await require('photoshop').core.executeAsModal(TrimDocument, { commandName: 'Trimming document' });
+  await duplicatedLayer.rasterize("entire");
+  await exportDocument.trim('transparent', true, true,true,true);
 
   if (layerData.SliceType != 'None') {
     await ExecuteSlice(layerData.Slices, exportDocument.width, exportDocument.height, exportDocument.id, 8);
@@ -127,6 +93,8 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
     spotColors: false,
   };
 
+
+  // @ts-ignore
   await exportDocument.save(pngFile, saveOptions);
   await exportDocument.closeWithoutSaving();
 }

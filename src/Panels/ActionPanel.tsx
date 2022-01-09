@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { app, action } from 'photoshop';
 import SliceRect from "../components/SliceRect";
 import { ReadFromMetaData } from '../typescript/Metadata';
@@ -32,9 +32,9 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   }
 
   useEffect(() => {
-    action.addNotificationListener(events, listener);
+    action.addNotificationListener(events, listener).then();
     return () => {
-      action.removeNotificationListener(events, listener);
+      action.removeNotificationListener(events, listener).then();
     };
   });
 

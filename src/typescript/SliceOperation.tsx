@@ -1,5 +1,4 @@
-import { TrimDocument } from './Utilities';
-import {action} from "photoshop";
+import {action, app} from "photoshop";
 import {Slices} from "./PSTypes";
 
 export enum Anchor {
@@ -109,7 +108,7 @@ export async function ExecuteSlice(
   await SelectAndTranslate(NE, NETranslation, DocID);
   await SelectAndTranslate(SW, SWTranslation, DocID);
   await SelectAndTranslate(SE, SETranslation, DocID);
-  await TrimDocument();
+  await app.activeDocument.trim('transparent', true, true,true,true);
 }
 
 async function GetPercentDelta(CenterPixelSize: number, Rect: Slices): Promise<PercentDelta> {

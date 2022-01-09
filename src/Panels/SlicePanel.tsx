@@ -39,7 +39,7 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
     let exportDocument: Document = await app.createDocument(options);
     const duplicatedLayer : Photoshop.Layer = await layer.duplicate(exportDocument);
     await duplicatedLayer.rasterize('entire');
-    await app.activeDocument.trim("transparent", false, false, false, false);
+    await app.activeDocument.trim("transparent",  true, true,true,true);
 
   };
 

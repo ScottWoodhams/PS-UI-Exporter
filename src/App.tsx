@@ -1,16 +1,11 @@
-// App imports
 import React from 'react';
-
 import './App.css';
 import InitPanel from './Panels/InitPanel';
 import ActionPanel from './Panels/ActionPanel';
-import Spectrum from "react-uxp-spectrum";
-import { ExportPanel } from "./Panels/ExportPanel";
-import {SlicePanel} from "./Panels/SlicePanel";
-import {app} from "photoshop";
+import { ExportPanel } from './Panels/ExportPanel';
+import { SlicePanel } from './Panels/SlicePanel';
+import { app } from 'photoshop';
 
-
-// eslint-disable-next-line no-shadow
 export enum Panels {
   Initialise,
   Action,
@@ -18,40 +13,32 @@ export enum Panels {
   Slice,
 }
 
-
-
 export default function App() {
   const [state, setState] = React.useState({
     CurrentPanel: Panels.Initialise,
   });
 
   function GoToActionPanel() {
-    let currentPanel = state.CurrentPanel;
-    currentPanel = Panels.Action;
-    setState({ CurrentPanel: currentPanel });
+    setState({ CurrentPanel: Panels.Action });
   }
 
   function GoToExportPanel() {
-    let currentPanel = state.CurrentPanel;
-    currentPanel = Panels.Export;
-    setState({ CurrentPanel: currentPanel });
+    setState({ CurrentPanel: Panels.Export });
   }
 
-  function GoToSlicePanel(){
-    let currentPanel = state.CurrentPanel;
-    currentPanel = Panels.Slice;
-    setState({ CurrentPanel: currentPanel });
+  function GoToSlicePanel() {
+    setState({ CurrentPanel: Panels.Slice });
   }
 
   return (
     <div className="App">
-
-      <sp-label>{Panels[state.CurrentPanel.valueOf()] + " Hi"}</sp-label>
+      <sp-label>{Panels[state.CurrentPanel.valueOf()] + ' Hi'}</sp-label>
       {state.CurrentPanel === Panels.Initialise && <InitPanel onFinished={GoToActionPanel} />}
-      {state.CurrentPanel === Panels.Action && <ActionPanel onExport={GoToExportPanel} onSlice={GoToSlicePanel}/>}
-      {state.CurrentPanel === Panels.Export && <ExportPanel onFinished={GoToActionPanel}/>}
-      {state.CurrentPanel === Panels.Slice && <SlicePanel onFinished={GoToActionPanel} layer={app.activeDocument.activeLayers[0]}/>}
-
+      {state.CurrentPanel === Panels.Action && <ActionPanel onExport={GoToExportPanel} onSlice={GoToSlicePanel} />}
+      {state.CurrentPanel === Panels.Export && <ExportPanel onFinished={GoToActionPanel} />}
+      {state.CurrentPanel === Panels.Slice && (
+        <SlicePanel onFinished={GoToActionPanel} layer={app.activeDocument.activeLayers[0]} />
+      )}
     </div>
   );
 }

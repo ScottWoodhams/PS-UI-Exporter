@@ -1,8 +1,7 @@
 import React from 'react';
-import { action, app, core } from "photoshop";
+import {action, app, core, ExecuteAsModalOptions} from "photoshop";
 import UILayerData, { LayerDataInit } from '../typescript/UILayerData';
 import { InitLayers, WriteToMetaData } from "../typescript/Metadata";
-import { ExecuteAsModalOptions, ExecutionContext } from "photoshop/dom/CoreModules";
 import Spectrum from 'react-uxp-spectrum';
 
 
