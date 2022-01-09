@@ -1,54 +1,52 @@
-import React, {useEffect} from 'react';
+import {useEffect} from 'react';
 import Spectrum from 'react-uxp-spectrum';
 import {UpdateMetaProperty} from '../typescript/Metadata';
 import {action, app} from 'photoshop';
-import {Document} from 'photoshop/dom/Document';
-import {Layer} from 'photoshop/dom/Layer';
+import {Document} from 'photoshop';
 import * as PSTypes from '../typescript/PSTypes';
-import {DocumentCreateOptions} from 'photoshop/dom/objects/CreateOptions';
-import {DocFill, RasterizeLayerType, RGBDocumentColorMode, Trim} from "../typescript/Constants";
+import * as Photoshop from "photoshop";
+import React = require('react');
+import {DocumentCreateOptions} from 'photoshop';
 
-
-export type SlicePanelProps = { onFinished: () => void; layer: Layer };
+export type SlicePanelProps = { onFinished: () => void; layer: Photoshop.Layer };
 
 export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
   const events: string[] = ['select'];
 
   const ApplySlice = async () => {
+    let id: number = layer['id'];
     let slices: PSTypes.Slices = { bottom: 0, left: 0, right: 0, top: 0 };
-    await UpdateMetaProperty(layer.id, 'Slices', slices);
+    await UpdateMetaProperty(id, 'Slices', slices);
     onFinished();
   };
 
   const Exit = async () => {
-    await app.activeDocument.close();
+    await app.activeDocument.closeWithoutSaving();
     onFinished();
   };
 
-  const init = async () => {
+  const Init = async () => {
     const options: DocumentCreateOptions = {
-      typename: '',
-      fill: DocFill,
+      typename: 'NewDocument',
+      fill: 'transparent',
       height: app.activeDocument.height,
-      mode: RGBDocumentColorMode,
+      mode: 'RGBColorMode',
       name: 'Image Export',
       resolution: app.activeDocument.resolution,
       width: app.activeDocument.width,
     };
 
     let exportDocument: Document = await app.createDocument(options);
-    let duplicatedLayer = await layer.duplicate(exportDocument);
+    const duplicatedLayer : Photoshop.Layer = await layer.duplicate(exportDocument);
+    await duplicatedLayer.rasterize('entire');
+    await app.activeDocument.trim("transparent", false, false, false, false);
 
-    await duplicatedLayer.rasterize(RasterizeLayerType);
-    await app.activeDocument.trim(Trim);
   };
 
   useEffect(() => {
-    action.addNotificationListener(events, Exit);
-    init();
+    action.addNotificationListener(events, Exit).then(() => Init());
     return () => {
-      action.removeNotificationListener(events, Exit);
-      Exit();
+      action.removeNotificationListener(events, Exit).then(() => Exit());
     };
   });
 
