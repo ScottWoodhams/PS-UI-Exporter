@@ -19,8 +19,8 @@ export default class UILayerData {
 
   constructor(layer?: Layer) {
     this.Name = 'N/A';
-    this.LayerType = layer.kind;
-    this.Bounds = layer.bounds;
+    this.LayerType = layer?.kind;
+    this.Bounds = layer?.bounds;
     this.HasLayerEffects = false;
     this.IsComponent = false;
     this.Component = 'N/A';
@@ -29,6 +29,7 @@ export default class UILayerData {
     this.TextDescriptor = undefined;
     this.OutlineDescriptor = undefined;
     this.ShadowDescriptor = undefined;
+
   }
 }
 

@@ -1,11 +1,7 @@
 import React from 'react';
 import SliceRectCell from './SliceRectCell';
-import { Bounds } from 'photoshop/dom/objects/Bounds';
-import { RectProps, Slices } from '../typescript/PSTypes';
 
 export default function SliceRect({ rect, slices, sliceType }) {
-  console.log('rectProps: ' + slices);
-
   const size = `${rect.width}x${rect.height}`;
   const isSliced = sliceType !== 'None';
 

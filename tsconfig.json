@@ -8,6 +8,8 @@
         "jsx": "react",
         "allowJs": true,
         "moduleResolution": "node",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "typeRoots": [
              "node_modules/@adobe-uxp-types/"
         ],
@@ -15,6 +17,8 @@
             "esnext",
             "dom"
         ],
-        "allowSyntheticDefaultImports": true
+        "exclude": [
+            "node_modules"
+        ]
     }
 }

@@ -3,7 +3,6 @@ import React from 'react';
 import { RGBToHex } from "../typescript/Utilities";
 
 export default function TextDetails({ desc }) {
-  console.log(desc);
   let hexString = RGBToHex(desc.red, desc.grain, desc.blue);
 
 

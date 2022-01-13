@@ -61,7 +61,13 @@ export async function IsTexture(kind: LayerKindConsts) {
   return kind == 'pixel' || 'smartObject' || 'solidColor';
 }
 
-
+/**
+ * Exports a layer as a PNG file
+ * @param layerData data object containing information such as layer size
+ * @param layer the layer to export
+ * @param folder the folder to export to
+ * @constructor
+ */
 export async function ExportTexture(layerData: UILayerData, layer: Layer, folder: storage.Folder) {
   const options: DocumentCreateOptions = {
     typename: '',

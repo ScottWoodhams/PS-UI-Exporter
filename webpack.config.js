@@ -31,8 +31,17 @@ module.exports = function(_env, argv) {
           resolve: {
             extensions: ['.js', 'jsx', '.ts', '.tsx'],
           },
-          use: 'ts-loader',
           exclude: /(node_modules)/,
+          use: [
+            {
+              loader: 'babel-loader',
+              options: {
+                cacheDirectory: true,
+                cacheCompression: false,
+                envName: 'development'
+              },
+            }
+          ],
         },
         {
           test: /\.css$/,

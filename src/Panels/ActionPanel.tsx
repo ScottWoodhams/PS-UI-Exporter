@@ -9,17 +9,14 @@ export type ActionPanelProps = { onExport: () => void, onSlice: () => void};
 
 export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
 
-  let emptyData = new UILayerData();
+  let emptyData = new UILayerData(app.activeDocument.layers[0]);
   const [metadata, setCurrentMeta] = useState(emptyData);
   const events: string[] = ['select'];
 
   const listener = async () => {
     const i: number = app.activeDocument.activeLayers[0].id;
     const meta = await ReadFromMetaData(i);
-    console.log("meta: " + meta);
     const LayerData: UILayerData = JSON.parse(meta);
-    console.log(`LayerType: ${LayerData.LayerType}`);
-    console.log(`Text: ${LayerData.TextDescriptor}`);
     setCurrentMeta(LayerData);
   };
 
@@ -32,9 +29,9 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   }
 
   useEffect(() => {
-    action.addNotificationListener(events, listener).then();
+    action.addNotificationListener(events, listener);
     return () => {
-      action.removeNotificationListener(events, listener).then();
+      action.removeNotificationListener(events, listener);
     };
   });
 

@@ -6,7 +6,6 @@ export async function InitLayers() {
     const id = layer.id;
     const layerData: UILayerData = new UILayerData(layer);
     await LayerDataInit(layerData, id);
-    console.log(`Writing to layer: ${layerData.Name}`);
     await WriteToMetaData(id, layerData);
   }
 }

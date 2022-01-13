@@ -5,8 +5,8 @@ import {action, app} from 'photoshop';
 import {Document} from 'photoshop';
 import * as PSTypes from '../typescript/PSTypes';
 import * as Photoshop from "photoshop";
-import React = require('react');
 import {DocumentCreateOptions} from 'photoshop';
+import React from "react";
 
 export type SlicePanelProps = { onFinished: () => void; layer: Photoshop.Layer };
 
