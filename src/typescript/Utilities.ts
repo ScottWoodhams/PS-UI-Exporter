@@ -100,7 +100,6 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   };
 
 
-  // @ts-ignore
-  await exportDocument.save(pngFile, saveOptions);
+  await exportDocument.saveAs.png(pngFile);
   await exportDocument.closeWithoutSaving();
 }

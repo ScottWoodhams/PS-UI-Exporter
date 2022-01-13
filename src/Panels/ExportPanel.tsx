@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Spectrum from 'react-uxp-spectrum';
 import { ExportTexture, IsTexture, WriteToJSONFile } from '../typescript/Utilities';
-import { app } from 'photoshop';
-import { ReadFromMetaData } from '../typescript/Metadata';
+import {app, core, ExecuteAsModalOptions} from 'photoshop';
+import { ReadFromMetaData} from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
 import {storage} from "uxp";
 
@@ -17,12 +17,16 @@ export function ExportPanel({ onFinished }: ExportPanelProps) {
     let data: UILayerData[] = [];
 
     for (const layer of app.activeDocument.layers) {
+      console.log(`exporting ${layer.name}`);
       let metaString: string = await ReadFromMetaData(layer.id);
       let layerData: UILayerData = JSON.parse(metaString);
       data.push(layerData);
 
       if (await IsTexture(layerData.LayerType)) {
-        await ExportTexture(layerData, layer, folder);
+        const options: ExecuteAsModalOptions = {commandName: "Exporting texture"};
+        await core.executeAsModal(()=> {
+          return ExportTexture(layerData, layer, folder);
+          }, options).then(onFinished);
       }
     }
 
@@ -33,10 +37,16 @@ export function ExportPanel({ onFinished }: ExportPanelProps) {
     onFinished();
   }
 
+/*  useEffect(() => {
+    Finish();
+    const options: ExecuteAsModalOptions = {commandName: "Exporting..."};
+    core.executeAsModal(Finish, options).then(onFinished);
+  })*/
+
   return (
     <div>
+      <Spectrum.ActionButton onClick={Finish}> Start Export</Spectrum.ActionButton>
       <sp-heading>Export Panel</sp-heading>
-      <Spectrum.ActionButton onClick={Finish}>Finish</Spectrum.ActionButton>
     </div>
   );
 }
