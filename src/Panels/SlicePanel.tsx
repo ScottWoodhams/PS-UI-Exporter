@@ -1,12 +1,12 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import Spectrum from 'react-uxp-spectrum';
-import {UpdateMetaProperty} from '../typescript/Metadata';
-import {action, app} from 'photoshop';
-import {Document} from 'photoshop';
+import { UpdateMetaProperty } from '../typescript/Metadata';
+import { action, app, core, Guide } from 'photoshop';
+import { Document } from 'photoshop';
 import * as PSTypes from '../typescript/PSTypes';
-import * as Photoshop from "photoshop";
-import {DocumentCreateOptions} from 'photoshop';
-import React from "react";
+import * as Photoshop from 'photoshop';
+import { DocumentCreateOptions } from 'photoshop';
+import React from 'react';
 
 export type SlicePanelProps = { onFinished: () => void; layer: Photoshop.Layer };
 
@@ -14,8 +14,18 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
   const events: string[] = ['select'];
 
   const ApplySlice = async () => {
-    let id: number = layer['id'];
-    let slices: PSTypes.Slices = { bottom: 0, left: 0, right: 0, top: 0 };
+    let topGuide = app.activeDocument.guides[0];
+    let rightGuide = app.activeDocument.guides[1];
+    let bottomGuide = app.activeDocument.guides[2];
+    let leftGuide = app.activeDocument.guides[3];
+
+    let id: number = layer.id;
+    let slices: PSTypes.Slices = {
+      bottom: bottomGuide.coordinate,
+      left: leftGuide.coordinate,
+      right: rightGuide.coordinate,
+      top: topGuide.coordinate,
+    };
     await UpdateMetaProperty(id, 'Slices', slices);
     onFinished();
   };
@@ -37,16 +47,21 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
     };
 
     let exportDocument: Document = await app.createDocument(options);
-    const duplicatedLayer : Photoshop.Layer = await layer.duplicate(exportDocument);
+    const duplicatedLayer: Photoshop.Layer = await layer.duplicate(exportDocument);
     await duplicatedLayer.rasterize('entire');
-    await app.activeDocument.trim("transparent",  true, true,true,true);
+    await exportDocument.trim('transparent', true, true, true, true);
 
+    exportDocument.guides.add('horizontal', 0);
+    exportDocument.guides.add('vertical', exportDocument.width);
+    exportDocument.guides.add('vertical', 0);
+    exportDocument.guides.add('horizontal', exportDocument.height);
   };
 
   useEffect(() => {
-    action.addNotificationListener(events, Exit).then(() => Init());
+    action.addNotificationListener(events, Exit);
+    core.executeAsModal(Init, { commandName: 'Performing slice setup' });
     return () => {
-      action.removeNotificationListener(events, Exit).then(() => Exit());
+      action.removeNotificationListener(events, Exit);
     };
   });
 
