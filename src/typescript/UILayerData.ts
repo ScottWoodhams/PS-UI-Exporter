@@ -1,27 +1,34 @@
-import { action, ActionDescriptor, Layer, LayerKindConsts } from 'photoshop';
+import { action, ActionDescriptor } from 'photoshop';
 import { GetMetaProperty } from './Metadata';
 import * as PSTypes from './PSTypes';
-import { RectangleToRect } from './Utilities';
+import { ELayerType } from './PSTypes';
+import { ColorDescToColorObj, EmptyColor, RectangleToRect } from './Utilities';
 
 export default class UILayerData {
   Name: string;
-  LayerType: LayerKindConsts;
+
+  LayerType: ELayerType;
+
   Bounds: PSTypes.Rect;
-  HasLayerEffects: boolean;
+
   IsComponent: boolean;
+
   Component: string;
+
   Slices?: PSTypes.Slices;
+
   SliceType?: PSTypes.SliceType;
+
   TextDescriptor?: PSTypes.TextDescriptor;
+
   OutlineDescriptor?: PSTypes.FrameFXDescriptor;
+
   ShadowDescriptor?: PSTypes.DropShadowDescriptor;
 
-
-  constructor(layer?: Layer) {
+  constructor() {
     this.Name = 'N/A';
-    this.LayerType = layer?.kind;
-    this.Bounds = layer?.bounds;
-    this.HasLayerEffects = false;
+    this.LayerType = ELayerType.pixel;
+    this.Bounds = { top: 0, left: 0, right: 0, width: 0, height: 0, bottom: 0 };
     this.IsComponent = false;
     this.Component = 'N/A';
     this.Slices = <PSTypes.Slices>{ bottom: 0, left: 0, right: 0, top: 0 };
@@ -29,12 +36,13 @@ export default class UILayerData {
     this.TextDescriptor = undefined;
     this.OutlineDescriptor = undefined;
     this.ShadowDescriptor = undefined;
-
   }
 }
 
-export async function LayerDataInit(LayerData: UILayerData, LayerID: number) {
-  const layerProps = ['name', 'bounds', 'layerFXVisible', 'textKey', 'layerEffects', 'metaData'];
+export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
+  const LayerData: UILayerData = new UILayerData();
+
+  const layerProps = ['name', 'layerKind', 'bounds', 'layerFXVisible', 'textKey', 'layerEffects', 'metaData'];
 
   const command = {
     _obj: 'multiGet',
@@ -53,34 +61,45 @@ export async function LayerDataInit(LayerData: UILayerData, LayerID: number) {
 
   LayerData.Name = props.name;
   LayerData.Bounds = RectangleToRect(props.bounds);
-  LayerData.LayerType = props.layerKind;
-  LayerData.HasLayerEffects = props.layerFXVisible === true;
+  LayerData.LayerType = ELayerType[ELayerType[props.layerKind]];
 
-  if (LayerData.LayerType === 'text') {
+  if (LayerData.LayerType === ELayerType.text) {
     LayerData.TextDescriptor = {
-      fontName: props.textKey.textStyleRange[0].textStyle.fontName,
-      size: props.textKey.textStyleRange[0].textStyle.size,
-      textKey: props.textKey.textKey,
-      type: props.textKey.textShape[0].char,
-      color: props.textKey.textStyleRange[0].textStyle.color,
+      fontName: props.textKey.textStyleRange[0].textStyle.fontName.value,
+      size: props.textKey.textStyleRange[0].textStyle.size.value,
+      textKey: props.textKey.textKey.value,
+      type: props.textKey.textShape[0].char.value,
+      color: props.textKey.textStyleRange[0].textStyle.color.value,
     };
   }
 
-  if (LayerData.HasLayerEffects) {
-    LayerData.OutlineDescriptor = props.layerEffects.frameFX;
-    LayerData.ShadowDescriptor = props.layerEffects.dropShadow;
-  }
+  const hasOutline = props.layerEffects.frameFX !== undefined;
+
+  LayerData.OutlineDescriptor = {
+    size: hasOutline ? props.layerEffects.frameFX.size._value : -1,
+    color: hasOutline ? await ColorDescToColorObj(props.layerEffects.frameFX.color) : EmptyColor,
+  };
+
+  const hasDropShadow = props.layerEffects.dropShadow !== undefined;
+
+  LayerData.ShadowDescriptor = {
+    angle: hasDropShadow ? props.layerEffects.dropShadow.angle._value : -1,
+    distance: hasDropShadow ? props.layerEffects.dropShadow.distance._value : -1,
+    color: hasDropShadow ? await ColorDescToColorObj(props.layerEffects.dropShadow.color) : EmptyColor,
+  };
 
   // get the user-written metadata if it exists
   if (props.metaData) {
-    LayerData.IsComponent = await GetMetaProperty(LayerID, 'IsComponent');
-    LayerData.Component = await GetMetaProperty(LayerID, 'Component');
-    LayerData.SliceType = await GetMetaProperty(LayerID, 'SliceType');
-    LayerData.Slices = await GetMetaProperty(LayerID, 'Slices');
+    LayerData.IsComponent = (await GetMetaProperty(LayerID, 'IsComponent')) as boolean;
+    LayerData.Component = (await GetMetaProperty(LayerID, 'Component')) as string;
+    LayerData.SliceType = (await GetMetaProperty(LayerID, 'SliceType')) as PSTypes.SliceType;
+    LayerData.Slices = (await GetMetaProperty(LayerID, 'Slices')) as PSTypes.Slices;
   } else {
     LayerData.IsComponent = false;
     LayerData.Component = '';
     LayerData.SliceType = 'None';
     LayerData.Slices = undefined;
   }
+
+  return LayerData;
 }

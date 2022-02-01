@@ -1,34 +1,39 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import Spectrum from 'react-uxp-spectrum';
+import { app, core, ExecuteAsModalOptions, Layer } from 'photoshop';
+import { storage } from 'uxp';
 import { ExportTexture, IsTexture, WriteToJSONFile } from '../typescript/Utilities';
-import {app, core, ExecuteAsModalOptions} from 'photoshop';
-import { ReadFromMetaData} from '../typescript/Metadata';
+import { ReadFromMetaData } from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
-import {storage} from "uxp";
+import {ELayerType} from "../typescript/PSTypes";
 
 export type ExportPanelProps = { onFinished: () => void };
 
 export function ExportPanel({ onFinished }: ExportPanelProps) {
-
   async function Finish() {
     const initialDomain = { initialDomain: storage.domains.userDesktop };
     const folder = await storage.localFileSystem.getFolder(initialDomain);
 
-    let data: UILayerData[] = [];
+    const data: UILayerData[] = [];
+    await Promise.all(
+      app.activeDocument.layers.map(async (layer: Layer) => {
+        const metaString: string = await ReadFromMetaData(layer.id);
+        const layerData: UILayerData = JSON.parse(metaString);
+        data.push(layerData);
 
-    for (const layer of app.activeDocument.layers) {
-      console.log(`exporting ${layer.name}`);
-      let metaString: string = await ReadFromMetaData(layer.id);
-      let layerData: UILayerData = JSON.parse(metaString);
-      data.push(layerData);
+        const isTexture: boolean = await IsTexture(layerData.LayerType);
 
-      if (await IsTexture(layerData.LayerType)) {
-        const options: ExecuteAsModalOptions = {commandName: "Exporting texture"};
-        await core.executeAsModal(()=> {
-          return ExportTexture(layerData, layer, folder);
-          }, options).then(onFinished);
-      }
-    }
+        if (isTexture === true) {
+          console.log('exporting texure');
+          const options: ExecuteAsModalOptions = { commandName: 'Exporting texture' };
+          await core
+            .executeAsModal(() => {
+              return ExportTexture(layerData, layer, folder);
+            }, options)
+            .then();
+        }
+      })
+    );
 
     console.table(data);
 
@@ -36,12 +41,6 @@ export function ExportPanel({ onFinished }: ExportPanelProps) {
 
     onFinished();
   }
-
-/*  useEffect(() => {
-    Finish();
-    const options: ExecuteAsModalOptions = {commandName: "Exporting..."};
-    core.executeAsModal(Finish, options).then(onFinished);
-  })*/
 
   return (
     <div>

@@ -1,10 +1,10 @@
 import React from 'react';
+import { app } from 'photoshop';
 import './App.css';
 import InitPanel from './Panels/InitPanel';
 import ActionPanel from './Panels/ActionPanel';
 import { ExportPanel } from './Panels/ExportPanel';
 import { SlicePanel } from './Panels/SlicePanel';
-import { app } from 'photoshop';
 
 export enum Panels {
   Initialise,

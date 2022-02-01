@@ -31,6 +31,9 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "react/require-default-props": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
-    "react/destructuring-assignment": "off"
+    "react/destructuring-assignment": "off",
+    "semi": "error",
+    "no-bitwise": "off",
+    "no-underscore-dangle": "off"
   }
 }

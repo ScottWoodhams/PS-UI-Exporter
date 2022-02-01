@@ -1,10 +1,10 @@
 import { storage } from 'uxp';
 
+import { app, ColorDescriptor, Document, DocumentCreateOptions, Layer, PsRGBColorSpace, RGBColor } from 'photoshop';
 import UILayerData from './UILayerData';
 
 import { ExecuteSlice } from './SliceOperation';
-import {app, ColorDescriptor, DocumentCreateOptions, Layer, LayerKindConsts, Rectangle, Document} from 'photoshop';
-import { Rect } from './PSTypes';
+import { ELayerType, Rect } from './PSTypes';
 
 /**
  * simplifying data for easier reading and exporting
@@ -12,7 +12,7 @@ import { Rect } from './PSTypes';
  * @constructor
  */
 export function RectangleToRect(value: any) {
-  let Rect: Rect = { bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0 };
+  const Rect: Rect = { bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0 };
 
   Rect.top = value.top._value;
   Rect.bottom = value.bottom._value;
@@ -23,23 +23,34 @@ export function RectangleToRect(value: any) {
   return Rect;
 }
 
-//convert red-green-blue to HEX value
-//todo correct this function
+// convert red-green-blue to HEX value
 export function RGBToHex(red: number, green: number, blue: number) {
-  return '#' + ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
+  return `#${((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1)}`;
 }
 
-//todo correct this function
-//simplifying data for easier reading and exporting
-export async function ColorDescToColorObj(value: ColorDescriptor) {
-  let Color = { Blue: 0, Green: 0, Hex: '', Red: 0 };
+export const EmptyColor: RGBColor = {
+  blue: -1,
+  green: -1,
+  red: -1,
+  hexValue: 'undefined',
+  typename: 'rgb',
+};
 
-  console.log('color ' + { value });
-  /*  Color.Hex = RGBToHex(value, value.grain, value.blue);
-  Color.Red = value.red;
-  Color.Green = value.grain;
-  Color.Blue = value.blue;*/
-  return value;
+// simplifying data for easier reading and exporting
+export async function ColorDescToColorObj(value: PsRGBColorSpace) {
+  const Color: RGBColor = {
+    blue: 0,
+    green: 0,
+    red: 0,
+    hexValue: '',
+    typename: 'rgb',
+  };
+
+  Color.hexValue = RGBToHex(value.red, value.grain, value.blue);
+  Color.red = value.red;
+  Color.green = value.grain;
+  Color.blue = value.blue;
+  return Color;
 }
 
 export async function WriteToJSONFile(jsonString: string, folder: storage.Folder) {
@@ -57,8 +68,13 @@ export async function WriteToJSONFile(jsonString: string, folder: storage.Folder
  * @param kind The kind of layer
  * @constructor
  */
-export async function IsTexture(kind: LayerKindConsts) {
-  return kind == 'pixel' || 'smartObject' || 'solidColor';
+export async function IsTexture(kind: ELayerType): Promise<boolean> {
+  return (
+    kind === ELayerType.pixel ||
+    kind === ELayerType.smartObject ||
+    kind === ELayerType.vector ||
+    kind === ELayerType.solidColor
+  );
 }
 
 /**
@@ -71,25 +87,25 @@ export async function IsTexture(kind: LayerKindConsts) {
 export async function ExportTexture(layerData: UILayerData, layer: Layer, folder: storage.Folder) {
   const options: DocumentCreateOptions = {
     typename: '',
-    fill: "transparent",
+    fill: 'transparent',
     height: app.activeDocument.height,
-    mode: "RGBColorMode",
+    mode: 'RGBColorMode',
     name: 'Image Export',
     resolution: app.activeDocument.resolution,
     width: app.activeDocument.width,
   };
 
-  let exportDocument: Document = await app.createDocument(options);
+  const exportDocument: Document = await app.createDocument(options);
 
-  let duplicatedLayer = await layer.duplicate(exportDocument);
-  await duplicatedLayer.rasterize("entire");
-  await exportDocument.trim('transparent', true, true,true,true);
+  const duplicatedLayer = await layer.duplicate(exportDocument);
+  await duplicatedLayer.rasterize('entire');
+  await exportDocument.trim('transparent', true, true, true, true);
 
-  if (layerData.SliceType != 'None') {
+  if (layerData.SliceType !== 'None') {
     await ExecuteSlice(layerData.Slices, exportDocument.width, exportDocument.height, exportDocument.id, 8);
   }
 
-  let pngFile: storage.File = await folder.createFile(layerData.Name + '.png', { overwrite: true });
+  const pngFile: storage.File = await folder.createFile(`${layerData.Name}.png`, { overwrite: true });
 
   const saveOptions = {
     alphaChannels: true,
@@ -98,7 +114,6 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
     embedColorProfile: false,
     spotColors: false,
   };
-
 
   await exportDocument.saveAs.png(pngFile);
   await exportDocument.closeWithoutSaving();
