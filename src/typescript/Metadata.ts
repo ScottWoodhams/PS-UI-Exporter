@@ -1,4 +1,4 @@
-import { action, app, Layer } from 'photoshop';
+import { action, app, core, ExecuteAsModalOptions, ExecutionContext, Layer } from 'photoshop';
 import UILayerData, { LayerDataInit } from './UILayerData';
 
 export async function WriteToMetaData(LayerId: number, data: UILayerData) {
@@ -39,7 +39,7 @@ export async function ReadFromMetaData(LayerId: number) {
       },
     ],
     {
-      modalBehavior: 'fail',
+      modalBehavior: 'execute',
     }
   );
 
@@ -47,10 +47,11 @@ export async function ReadFromMetaData(LayerId: number) {
 }
 
 export async function UpdateMetaProperty(LayerID: number, property: string, value: unknown) {
-  const meta: string = await ReadFromMetaData(LayerID);
+  const meta = await ReadFromMetaData(LayerID);
+
   const metaObj: UILayerData = JSON.parse(meta);
   metaObj[property] = value;
-  await WriteToMetaData(LayerID, metaObj);
+  await core.executeAsModal(() => WriteToMetaData(LayerID, metaObj), { commandName: '' });
 }
 
 export async function GetMetaProperty(LayerID: number, property: string): Promise<unknown> {

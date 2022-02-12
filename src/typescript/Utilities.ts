@@ -99,6 +99,7 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
 
   const duplicatedLayer = await layer.duplicate(exportDocument);
   await duplicatedLayer.rasterize('entire');
+  await duplicatedLayer.rasterize('layerStyle');
   await exportDocument.trim('transparent', true, true, true, true);
 
   if (layerData.SliceType !== 'None') {

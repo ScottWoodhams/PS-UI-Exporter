@@ -34,6 +34,7 @@
     "react/destructuring-assignment": "off",
     "semi": "error",
     "no-bitwise": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "no-shadow": "off"
   }
 }

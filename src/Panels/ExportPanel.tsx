@@ -24,11 +24,10 @@ export function ExportPanel({ onFinished }: ExportPanelProps) {
         const isTexture: boolean = await IsTexture(layerData.LayerType);
 
         if (isTexture === true) {
-          console.log('exporting texure');
           const options: ExecuteAsModalOptions = { commandName: 'Exporting texture' };
           await core
             .executeAsModal(() => {
-              return ExportTexture(layerData, layer, folder);
+                return ExportTexture(layerData, layer, folder);
             }, options)
             .then();
         }
