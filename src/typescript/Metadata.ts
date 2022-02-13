@@ -20,16 +20,6 @@ export async function WriteToMetaData(LayerId: number, data: UILayerData) {
   await action.batchPlay([command], {});
 }
 
-export async function InitLayers() {
-  await Promise.all(
-    app.activeDocument.layers.map(async (layer: Layer) => {
-      // todo check if layer meta already exsists - if it does - move onto the next layer
-      const layerData: UILayerData = await LayerDataInit(layer.id);
-      await WriteToMetaData(layer.id, layerData);
-    })
-  );
-}
-
 export async function ReadFromMetaData(LayerId: number) {
   const result = await action.batchPlay(
     [
@@ -45,6 +35,18 @@ export async function ReadFromMetaData(LayerId: number) {
   );
 
   return result[0].XMPMetadataAsUTF8;
+}
+
+export async function InitLayers() {
+  await Promise.all(
+    app.activeDocument.layers.map(async (layer: Layer) => {
+      const meta = await ReadFromMetaData(layer.id);
+      if (meta === undefined) {
+        const layerData: UILayerData = await LayerDataInit(layer.id);
+        await WriteToMetaData(layer.id, layerData);
+      }
+    })
+  );
 }
 
 export async function UpdateMetaProperty(LayerID: number, property: string, value: unknown) {
