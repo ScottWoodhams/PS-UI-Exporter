@@ -9,6 +9,9 @@ import { UpdateMetaProperty } from '../typescript/Metadata';
 
 export type SlicePanelProps = { onFinished: () => void; layer: Photoshop.Layer };
 
+// todo improve ui
+// todo show slice values in ui
+
 export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
   const events: string[] = ['select'];
 

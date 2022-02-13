@@ -8,6 +8,10 @@ import TextDetails from '../components/TextDetails';
 
 export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 
+// todo improve ui layout
+// todo add refresh for bounds
+// todo add component button
+
 export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   const emptyData = new UILayerData();
   const [metadata, setCurrentMeta] = useState(emptyData);

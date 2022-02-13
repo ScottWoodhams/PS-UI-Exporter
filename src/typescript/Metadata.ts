@@ -23,6 +23,7 @@ export async function WriteToMetaData(LayerId: number, data: UILayerData) {
 export async function InitLayers() {
   await Promise.all(
     app.activeDocument.layers.map(async (layer: Layer) => {
+      // todo check if layer meta already exsists - if it does - move onto the next layer
       const layerData: UILayerData = await LayerDataInit(layer.id);
       await WriteToMetaData(layer.id, layerData);
     })
