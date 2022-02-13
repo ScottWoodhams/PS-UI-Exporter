@@ -6,7 +6,7 @@
 
 .App {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     width: 100vw;
     height: 100vh;
@@ -23,86 +23,28 @@
 
 }
 
-.SliceRect {
-    width: 100px;
-    height: 100px;
-    outline: 2px solid #535353;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    background-color: #5e5e5e;
-    border: 2px #3a393a solid;
-}
-
-.SliceCellTopLeft,      .SliceCellTopMiddle,    .SliceCellTopRight,
-.SliceCellMiddleRight,  .SliceCellMiddle,       .SliceCellMiddleLeft,
-.SliceCellLowerLeft,    .SliceCellLowerMiddle,  .SliceCellLowerRight
-{
-    width: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-color: var(--rect-slice-border-color);
-    border-style: solid;
-    text-align: center;
-    text-anchor: middle;
-    ;
-}
-
-.SliceCellTopLeft {
-    border-right-width: var(--rect-slice-border-width);
-    border-bottom-width: var(--rect-slice-border-width);
-}
-
-.SliceCellTopMiddle {
-    border-right-width: var(--rect-slice-border-width);
-    border-left-width: var(--rect-slice-border-width);
-    border-bottom-width: var(--rect-slice-border-width);
-}
-
-.SliceCellTopRight {
-    border-left-width: var(--rect-slice-border-width);
-    border-bottom-width: var(--rect-slice-border-width);
-}
-
-.SliceCellMiddleLeft {
-    border-top-width: var(--rect-slice-border-width);
-    border-right-width: var(--rect-slice-border-width);
-    border-bottom-width: var(--rect-slice-border-width);
-}
-
-.SliceCellMiddle {
-    border-width: var(--rect-slice-border-width);
-}
-
-.SliceCellMiddleRight{
-    border-left-width: var(--rect-slice-border-width);
-    border-bottom-width: var(--rect-slice-border-width);
-    border-top-width: var(--rect-slice-border-width);
-}
-.SliceCellLowerLeft {
-    border-top-width: var(--rect-slice-border-width);
-    border-right-width: var(--rect-slice-border-width);
-}
-.SliceCellLowerMiddle{
-    border-top-width: var(--rect-slice-border-width);
-    border-right-width: var(--rect-slice-border-width);
-    border-left-width: var(--rect-slice-border-width);
-
-}
-.SliceCellLowerRight{
-    border-top-width: var(--rect-slice-border-width);
-    border-left-width: var(--rect-slice-border-width);
-}
-
-.CellText{
-    color: white;
-    text-shadow:  2px 2px 5px red;
-}
-
 .TextDetails{
     display: flex;
     flex-direction: column;
-
+    justify-content: flex-start;
     height: 100px;
+}
+
+.ColorField{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.ColorFieldSquare {
+    background: aqua;
+    height: 10px;
+    width: 10px;
+
+/*    border-color: rgba(0, 0, 0, 0.68);
+    border-width: 1px;
+    border-style: solid;*/
+    margin-right: 5px;
+
+
 }

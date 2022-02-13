@@ -41,13 +41,15 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
 
   return (
     <div>
-      UI Exporter
-      <Spectrum.ActionButton onClick={Export}>Export</Spectrum.ActionButton>
+      <Spectrum.Heading>Rect Information</Spectrum.Heading>
       <Divider size="large" />
       <SliceRect rect={metadata.Bounds} slices={metadata.Slices} sliceType={metadata.SliceType} />
       <Spectrum.ActionButton onClick={Slice}>Slice</Spectrum.ActionButton>
+      <Spectrum.Heading>Text Information</Spectrum.Heading>
       <Divider size="large" />
       {metadata.TextDescriptor !== undefined && <TextDetails desc={metadata.TextDescriptor} />}
+      <Spectrum.ActionButton onClick={Export}>Export</Spectrum.ActionButton>
+
     </div>
   );
 }

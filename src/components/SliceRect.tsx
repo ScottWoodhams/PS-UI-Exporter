@@ -1,29 +1,28 @@
 import React from 'react';
-import SliceRectCell from './SliceRectCell';
+import Spectrum from 'react-uxp-spectrum';
+import { Rect, Slices, SliceType } from '../typescript/PSTypes';
 
-export default function SliceRect({ rect, slices, sliceType }) {
+export type SliceRectProps = { rect: Rect; slices: Slices; sliceType: SliceType };
+
+export default function SliceRect({ rect, slices, sliceType }: SliceRectProps) {
   const size = `${rect.width}x${rect.height}`;
   const isSliced = sliceType !== 'None';
 
-  const sliceTop = isSliced ? slices.top.toString() : '';
-  const sliceLeft = isSliced ? slices.left.toString() : '';
-  const sliceRight = isSliced ? slices.right.toString() : '';
-  const sliceBottom = isSliced ? slices.bottom.toString() : '';
+  const sliceTop = isSliced ? slices.top?.toString() : '';
+  const sliceLeft = isSliced ? slices.left?.toString() : '';
+  const sliceRight = isSliced ? slices.right?.toString() : '';
+  const sliceBottom = isSliced ? slices.bottom?.toString() : '';
 
   return (
-    <div>
-      <sp-label>{sliceType}</sp-label>
-      <div className="SliceRect">
-        <SliceRectCell CSSClassName="SliceCellTopLeft" />
-        <SliceRectCell CSSClassName="SliceCellTopMiddle" Number={sliceTop} />
-        <SliceRectCell CSSClassName="SliceCellTopRight" />
-        <SliceRectCell CSSClassName="SliceCellMiddleLeft" Number={sliceLeft} />
-        <SliceRectCell CSSClassName="SliceCellMiddle" Number={size} />
-        <SliceRectCell CSSClassName="SliceCellMiddleRight" Number={sliceRight} />
-        <SliceRectCell CSSClassName="SliceCellLowerLeft" />
-        <SliceRectCell CSSClassName="SliceCellLowerMiddle" Number={sliceBottom} />
-        <SliceRectCell CSSClassName="SliceCellLowerRight" />
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <Spectrum.Body size="M">Size: {size} </Spectrum.Body>
+
+      <Spectrum.Body size="M">SliceType: {sliceType}</Spectrum.Body>
+
+      <Spectrum.Body size="M">Top: {sliceTop}</Spectrum.Body>
+      <Spectrum.Body size="M">Left: {sliceLeft}</Spectrum.Body>
+      <Spectrum.Body size="M">Right: {sliceRight}</Spectrum.Body>
+      <Spectrum.Body size="M">Bottom: {sliceBottom}</Spectrum.Body>
     </div>
   );
 }
