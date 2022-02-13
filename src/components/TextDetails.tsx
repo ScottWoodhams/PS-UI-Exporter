@@ -1,16 +1,16 @@
-
 import React from 'react';
-import { RGBToHex } from "../typescript/Utilities";
+import { TextDescriptor } from '../typescript/PSTypes';
+import ColorField from './ColorField';
 
-export default function TextDetails({ desc }) {
-  let hexString = RGBToHex(desc.red, desc.grain, desc.blue);
+type TextDetailsProps = { desc: TextDescriptor };
 
-
+export default function TextDetails({ desc }: TextDetailsProps) {
   return (
-    <div>
-      <sp-label>{desc.size._value}</sp-label>
-      <sp-label>{desc.type._value}</sp-label>
-      <sp-label>{hexString}</sp-label>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <sp-label>Size: {desc.size}</sp-label>
+      <sp-label>Type:{desc.type}</sp-label>
+      <sp-label>Font:{desc.fontName}</sp-label>
+      <ColorField Col={desc.color} />
     </div>
   );
 }
