@@ -5,6 +5,8 @@ import { InitLayers } from '../typescript/Metadata';
 
 export type InitPanelProps = { onFinished: () => void };
 
+// todo improve ui
+
 export default function InitPanel({ onFinished }: InitPanelProps) {
   const events: string[] = ['open', 'close'];
   const [isInDocument, updateDocumentInUse] = useState(false);
@@ -31,12 +33,12 @@ export default function InitPanel({ onFinished }: InitPanelProps) {
   if (isInDocument) {
     return (
       <div className="InitPanel">
-        {isInDocument && (
-          <Spectrum.Button variant="secondary" onClick={Init}>
-            {' '}
-            Start{' '}
-          </Spectrum.Button>
-        )}
+        <Spectrum.Body size="S">
+          If this document has already gone through this process, any previous data will not be reset.
+        </Spectrum.Body>
+        <Spectrum.Button variant="secondary" onClick={Init}>
+          Initialize
+        </Spectrum.Button>
       </div>
     );
   }
