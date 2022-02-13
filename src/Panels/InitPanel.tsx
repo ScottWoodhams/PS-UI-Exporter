@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { action, app, core, ExecuteAsModalOptions } from 'photoshop';
 import Spectrum from 'react-uxp-spectrum';
 import { InitLayers } from '../typescript/Metadata';
+import ColorField from "../components/ColorField";
+import {EmptyColor} from "../typescript/Utilities";
 
 export type InitPanelProps = { onFinished: () => void };
-
-// todo improve ui
 
 export default function InitPanel({ onFinished }: InitPanelProps) {
   const events: string[] = ['open', 'close'];
