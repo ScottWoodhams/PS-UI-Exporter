@@ -32,7 +32,6 @@ export default function App() {
 
   return (
     <div className="App">
-      <sp-label>{Panels[state.CurrentPanel.valueOf()] + ' Hi'}</sp-label>
       {state.CurrentPanel === Panels.Initialise && <InitPanel onFinished={GoToActionPanel} />}
       {state.CurrentPanel === Panels.Action && <ActionPanel onExport={GoToExportPanel} onSlice={GoToSlicePanel} />}
       {state.CurrentPanel === Panels.Export && <ExportPanel onFinished={GoToActionPanel} />}
