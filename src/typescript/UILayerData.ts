@@ -64,29 +64,36 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
   LayerData.LayerType = ELayerType[ELayerType[props.layerKind]];
 
   if (LayerData.LayerType === ELayerType.text) {
+    console.log('Text layer');
+
     LayerData.TextDescriptor = {
-      fontName: props.textKey.textStyleRange[0].textStyle.fontName.value,
-      size: props.textKey.textStyleRange[0].textStyle.size.value,
-      textKey: props.textKey.textKey.value,
-      type: props.textKey.textShape[0].char.value,
-      color: props.textKey.textStyleRange[0].textStyle.color.value,
+      fontName: props.textKey.textStyleRange[0].textStyle.fontName,
+      size: props.textKey.textStyleRange[0].textStyle.size._value,
+      textKey: props.textKey.textKey,
+      type: props.textKey.textShape[0].char._value,
+      color: await ColorDescToColorObj(props.textKey.textStyleRange[0].textStyle.color),
     };
+
+    console.log({ LayerData });
+    console.log({  props });
   }
 
-  const hasOutline = props.layerEffects.frameFX !== undefined;
+  if (props.layerEffects !== undefined) {
+    const hasOutline = props.layerEffects.frameFX !== null;
 
-  LayerData.OutlineDescriptor = {
-    size: hasOutline ? props.layerEffects.frameFX.size._value : -1,
-    color: hasOutline ? await ColorDescToColorObj(props.layerEffects.frameFX.color) : EmptyColor,
-  };
+    LayerData.OutlineDescriptor = {
+      size: hasOutline ? props.layerEffects.frameFX.size._value : 0,
+      color: hasOutline ? await ColorDescToColorObj(props.layerEffects.frameFX.color) : EmptyColor,
+    };
 
-  const hasDropShadow = props.layerEffects.dropShadow !== undefined;
+    const hasDropShadow = props.layerEffects.dropShadow !== undefined;
 
-  LayerData.ShadowDescriptor = {
-    angle: hasDropShadow ? props.layerEffects.dropShadow.angle._value : -1,
-    distance: hasDropShadow ? props.layerEffects.dropShadow.distance._value : -1,
-    color: hasDropShadow ? await ColorDescToColorObj(props.layerEffects.dropShadow.color) : EmptyColor,
-  };
+    LayerData.ShadowDescriptor = {
+      angle: hasDropShadow ? props.layerEffects.dropShadow.angle._value : 0,
+      distance: hasDropShadow ? props.layerEffects.dropShadow.distance._value : 0,
+      color: hasDropShadow ? await ColorDescToColorObj(props.layerEffects.dropShadow.color) : EmptyColor,
+    };
+  }
 
   // get the user-written metadata if it exists
   if (props.metaData) {

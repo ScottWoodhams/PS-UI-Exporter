@@ -53,7 +53,7 @@ export interface TextDescriptor {
   size: number;
   textKey: string;
   type: string;
-  color: Color;
+  color: RGBColor;
 }
 
 export interface Color {
