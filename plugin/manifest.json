@@ -1,14 +1,15 @@
 {
-  "manifestVersion": 4,
+
   "id": "ui.exporter.id",
   "name": "ui-exporter",
   "version": "1.0.0",
-  "main": "index.html",
+  "main": "index.js",
+  "manifestVersion": 4,
   "host": {
     "app": "PS",
-    "minVersion": "23.0.0",
+    "minVersion": "22.0.0",
     "data": {
-      "ApiVersion": 2
+      "apiVersion": 2
     }
   },
   "entrypoints": [
@@ -17,40 +18,13 @@
       "id": "MainPanel",
       "label": {
         "default": "MainPanel"
-      },
-      "icons": [
-        {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_D.png",
-          "scale": [1, 2],
-          "theme": ["dark", "darkest"],
-          "species": ["generic"]
-        },
-        {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_N.png",
-          "scale": [1, 2],
-          "theme": ["lightest", "light"],
-          "species": ["generic"]
-        }
-      ],
-      "minimumSize": {
-        "width": 230,
-        "height": 200
-      },
-      "maximumSize": {
-        "width": 460,
-        "height": 1080
-      },
-      "preferredDockedSize": {
-        "width": 230,
-        "height": 300
-      },
-      "preferredFloatingSize": {
-        "width": 230,
-        "height": 300
+      }
+    },
+    {
+      "type": "command",
+      "id": "test",
+      "label": {
+        "default": "test"
       }
     }
   ],

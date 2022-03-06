@@ -1,15 +1,17 @@
 import '@babel/polyfill';
-import ReactDOM from 'react-dom';
 import React from 'react';
+import { entrypoints } from 'uxp';
 import App from './App';
+import PanelController from './Controllers/PanelController';
+import MenuFlyout from './typescript/MenuFlyout';
 
 console.log('refreshed');
+console.clear();
 
-// Render dialog to DOM, this will show the UI in the container, like a Panels
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+entrypoints.setup({
 
+
+  panels: {
+    MainPanel: PanelController(<App />, { ...MenuFlyout }),
+  },
+});
