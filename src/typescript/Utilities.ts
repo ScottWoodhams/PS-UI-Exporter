@@ -5,6 +5,8 @@ import UILayerData from './UILayerData';
 
 import { ExecuteSlice } from './SliceOperation';
 import { ELayerType, Rect } from './PSTypes';
+import { Log, LogLevel } from './Logger';
+import * as PSTypes from './PSTypes';
 
 /**
  * simplifying data for easier reading and exporting
@@ -97,16 +99,31 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
 
   const exportDocument: Document = await app.createDocument(options);
 
+  if (exportDocument === null) {
+    await Log(LogLevel.Error, 'ExportDocument is null');
+  }
   const duplicatedLayer = await layer.duplicate(exportDocument);
+
+  if (duplicatedLayer === null) {
+    await Log(LogLevel.Error, 'duplicated layer is null');
+  }
+
   await duplicatedLayer.rasterize('entire');
   await duplicatedLayer.rasterize('layerStyle');
   await exportDocument.trim('transparent', true, true, true, true);
 
   if (layerData.SliceType !== 'None') {
+    if (layerData.Slices === <PSTypes.Slices>{ bottom: 0, left: 0, right: 0, top: 0 }) {
+      await Log(LogLevel.Warning, 'layer is sliced with slices all set to zero');
+    }
     await ExecuteSlice(layerData.Slices, exportDocument.width, exportDocument.height, exportDocument.id, 8);
   }
 
   const pngFile: storage.File = await folder.createFile(`${layerData.Name}.png`, { overwrite: true });
+
+  if (pngFile === null) {
+    await Log(LogLevel.Error, 'Failed to create png file');
+  }
 
   const saveOptions = {
     alphaChannels: true,

@@ -5,6 +5,7 @@ import SliceRect from '../components/SliceRect';
 import { ReadFromMetaData } from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
 import TextDetails from '../components/TextDetails';
+import {Log, LogLevel} from "../typescript/Logger";
 
 export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 
@@ -20,6 +21,9 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   const listener = async () => {
     const i: number = app.activeDocument.activeLayers[0].id;
     const meta = await ReadFromMetaData(i);
+    if (meta === null || undefined) {
+      await Log(LogLevel.Error, 'Meta is null or undefined');
+    }
     const LayerData: UILayerData = JSON.parse(meta);
     setCurrentMeta(LayerData);
   };
@@ -49,7 +53,6 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
       <Divider size="large" />
       {metadata.TextDescriptor !== undefined && <TextDetails desc={metadata.TextDescriptor} />}
       <Spectrum.ActionButton onClick={Export}>Export</Spectrum.ActionButton>
-
     </div>
   );
 }

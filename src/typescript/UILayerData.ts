@@ -3,6 +3,7 @@ import { GetMetaProperty } from './Metadata';
 import * as PSTypes from './PSTypes';
 import { ELayerType } from './PSTypes';
 import { ColorDescToColorObj, EmptyColor, RectangleToRect } from './Utilities';
+import { Log, LogLevel } from './Logger';
 
 export default class UILayerData {
   Name: string;
@@ -59,12 +60,17 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
   const actionDescriptors: ActionDescriptor[] = await action.batchPlay([command], {});
   const props: ActionDescriptor = actionDescriptors[0];
 
+  await Log(LogLevel.Info, `Initialising layer "${props.Name}`);
+
   LayerData.Name = props.name;
   LayerData.Bounds = RectangleToRect(props.bounds);
+  await Log(LogLevel.Info, `Layer ${props.Name} Bounds "${LayerData.Bounds}`);
+
   LayerData.LayerType = ELayerType[ELayerType[props.layerKind]];
+  await Log(LogLevel.Info, `Layer ${props.Name} Bounds "${LayerData.LayerType}`);
 
   if (LayerData.LayerType === ELayerType.text) {
-    console.log('Text layer');
+    await Log(LogLevel.Info, `Layer ${props.Name} is classed as text`);
 
     LayerData.TextDescriptor = {
       fontName: props.textKey.textStyleRange[0].textStyle.fontName,
@@ -73,13 +79,13 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
       type: props.textKey.textShape[0].char._value,
       color: await ColorDescToColorObj(props.textKey.textStyleRange[0].textStyle.color),
     };
-
-    console.log({ LayerData });
-    console.log({  props });
   }
 
   if (props.layerEffects !== undefined) {
+    await Log(LogLevel.Info, `Layer ${props.Name} has LayerEffects`);
+
     const hasOutline = props.layerEffects.frameFX !== null;
+    await Log(LogLevel.Info, `Layer ${props.Name} has outline: ${hasOutline}`);
 
     LayerData.OutlineDescriptor = {
       size: hasOutline ? props.layerEffects.frameFX.size._value : 0,
@@ -87,6 +93,7 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
     };
 
     const hasDropShadow = props.layerEffects.dropShadow !== undefined;
+    await Log(LogLevel.Info, `Layer ${props.Name} has dropShadow: ${hasDropShadow}`);
 
     LayerData.ShadowDescriptor = {
       angle: hasDropShadow ? props.layerEffects.dropShadow.angle._value : 0,
@@ -97,11 +104,14 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
 
   // get the user-written metadata if it exists
   if (props.metaData) {
+    await Log(LogLevel.Info, `Layer ${props.Name} already has metaData`);
+
     LayerData.IsComponent = (await GetMetaProperty(LayerID, 'IsComponent')) as boolean;
     LayerData.Component = (await GetMetaProperty(LayerID, 'Component')) as string;
     LayerData.SliceType = (await GetMetaProperty(LayerID, 'SliceType')) as PSTypes.SliceType;
     LayerData.Slices = (await GetMetaProperty(LayerID, 'Slices')) as PSTypes.Slices;
   } else {
+    await Log(LogLevel.Info, `Layer ${props.Name} does not already have metaData`);
     LayerData.IsComponent = false;
     LayerData.Component = '';
     LayerData.SliceType = 'None';

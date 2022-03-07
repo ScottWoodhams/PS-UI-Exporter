@@ -5,12 +5,9 @@ import App from './App';
 import PanelController from './Controllers/PanelController';
 import MenuFlyout from './typescript/MenuFlyout';
 
-console.log('refreshed');
 console.clear();
 
 entrypoints.setup({
-
-
   panels: {
     MainPanel: PanelController(<App />, { ...MenuFlyout }),
   },

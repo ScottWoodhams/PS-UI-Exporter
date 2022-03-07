@@ -6,6 +6,7 @@ import * as Photoshop from 'photoshop';
 import * as PSTypes from '../typescript/PSTypes';
 
 import { UpdateMetaProperty } from '../typescript/Metadata';
+import { Log, LogLevel } from '../typescript/Logger';
 
 export type SlicePanelProps = { onFinished: () => void; layer: Photoshop.Layer };
 
@@ -61,7 +62,14 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
     };
 
     const exportDocument: Document = await app.createDocument(options);
+    if (exportDocument === null || undefined) {
+      await Log(LogLevel.Error, 'Slice Document is null');
+    }
+
     const duplicatedLayer: Photoshop.Layer = await layer.duplicate(exportDocument);
+    if (duplicatedLayer === null || undefined) {
+      await Log(LogLevel.Error, 'Slice duplicated layer is null');
+    }
     await duplicatedLayer.rasterize('entire');
     await exportDocument.trim('transparent', true, true, true, true);
 
@@ -70,6 +78,9 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
     exportDocument.guides.add('horizontal', exportDocument.height);
     exportDocument.guides.add('vertical', exportDocument.width);
 
+    if (exportDocument.guides.length !== 4) {
+      await Log(LogLevel.Error, '4 guides were not created for slicing');
+    }
   };
 
   useEffect(() => {

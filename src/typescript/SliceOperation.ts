@@ -1,6 +1,6 @@
 import { action, app } from 'photoshop';
 import { Slices } from './PSTypes';
-
+import { Log, LogLevel } from './Logger';
 
 export enum Anchor {
   AnchorN = 'QCSSide0',
@@ -22,79 +22,90 @@ interface Translation {
 }
 
 async function GetPercentDelta(CenterPixelSize: number, Rect: Slices): Promise<PercentDelta> {
-  console.log(`Rect Right: ${Rect.right}`);
-  console.log(`Rect Left: ${Rect.left}`);
   const widthPercentDelta = (CenterPixelSize / (Rect.right - Rect.left)) * 100;
-  console.log(widthPercentDelta);
-
   const heightPercentDelta = (CenterPixelSize / (Rect.bottom - Rect.top)) * 100;
   return { Width: widthPercentDelta, Height: heightPercentDelta };
 }
 
 export async function Select(Bounds: Slices) {
-  await action.batchPlay(
-    [
-      {
-        _obj: 'set',
-        _target: [{ _ref: 'channel', _property: 'selection' }],
-        to: {
-          _obj: 'rectangle',
-          top: { _unit: 'pixelsUnit', _value: Bounds.top },
-          left: { _unit: 'pixelsUnit', _value: Bounds.left },
-          bottom: { _unit: 'pixelsUnit', _value: Bounds.bottom },
-          right: { _unit: 'pixelsUnit', _value: Bounds.right },
+  try {
+    await action.batchPlay(
+      [
+        {
+          _obj: 'set',
+          _target: [{ _ref: 'channel', _property: 'selection' }],
+          to: {
+            _obj: 'rectangle',
+            top: { _unit: 'pixelsUnit', _value: Bounds.top },
+            left: { _unit: 'pixelsUnit', _value: Bounds.left },
+            bottom: { _unit: 'pixelsUnit', _value: Bounds.bottom },
+            right: { _unit: 'pixelsUnit', _value: Bounds.right },
+          },
+          feather: {
+            _unit: 'pixelsUnit',
+            _value: 0,
+          },
+          _isCommand: false,
+          _options: { dialogOptions: 'dontDisplay' },
         },
-        feather: {
-          _unit: 'pixelsUnit',
-          _value: 0,
-        },
-        _isCommand: false,
-        _options: { dialogOptions: 'dontDisplay' },
-      },
-    ],
-    {}
-  );
+      ],
+      {}
+    );
+  } catch (e) {
+    console.log(e);
+    await Log(LogLevel.Error, e);
+  }
 }
 
 export async function Deselect(id: number) {
-  await action.batchPlay(
-    [
-      {
-        _obj: 'set',
-        _target: [
-          { _ref: 'channel', _property: 'selection' },
-          { _ref: 'document', _id: id },
-        ],
-        to: { _enum: 'ordinal', _value: 'none' },
-        _isCommand: false,
-        _options: { dialogOptions: 'dontDisplay' },
-      },
-    ],
-    {}
-  );
+  try {
+    await action.batchPlay(
+      [
+        {
+          _obj: 'set',
+          _target: [
+            { _ref: 'channel', _property: 'selection' },
+            { _ref: 'document', _id: id },
+          ],
+          to: { _enum: 'ordinal', _value: 'none' },
+          _isCommand: false,
+          _options: { dialogOptions: 'dontDisplay' },
+        },
+      ],
+      {}
+    );
+  } catch (e) {
+    console.log(e);
+    await Log(LogLevel.Error, e);
+  }
 }
 
 export async function TranslateSelection(Translation: Translation) {
-  await action.batchPlay(
-    [
-      {
-        _obj: 'transform',
-        _target: [{ _ref: 'layer', _enum: 'ordinal', _value: 'targetEnum' }],
-        freeTransformCenterState: { _enum: 'quadCenterState', _value: Translation.Anchor },
-        offset: {
-          _obj: 'offset',
-          horizontal: { _unit: 'pixelsUnit', _value: Translation.XDelta },
-          vertical: { _unit: 'pixelsUnit', _value: Translation.YDelta },
+  try {
+    await action.batchPlay(
+      [
+        {
+          _obj: 'transform',
+          _target: [{ _ref: 'layer', _enum: 'ordinal', _value: 'targetEnum' }],
+          freeTransformCenterState: { _enum: 'quadCenterState', _value: Translation.Anchor },
+          offset: {
+            _obj: 'offset',
+            horizontal: { _unit: 'pixelsUnit', _value: Translation.XDelta },
+            vertical: { _unit: 'pixelsUnit', _value: Translation.YDelta },
+          },
+          width: { _unit: 'percentUnit', _value: Translation.Width },
+          height: { _unit: 'percentUnit', _value: Translation.Height },
+          interfaceIconFrameDimmed: { _enum: 'interpolationType', _value: 'nearestNeighbor' },
+          _isCommand: false,
+          _options: { dialogOptions: 'dontDisplay' },
         },
-        width: { _unit: 'percentUnit', _value: Translation.Width },
-        height: { _unit: 'percentUnit', _value: Translation.Height },
-        interfaceIconFrameDimmed: { _enum: 'interpolationType', _value: 'nearestNeighbor' },
-        _isCommand: false,
-        _options: { dialogOptions: 'dontDisplay' },
-      },
-    ],
-    {}
-  );
+      ],
+      {}
+    );
+  } catch (e) {
+    console.log(e);
+    await Log(LogLevel.Error, e);
+  }
 }
 
 async function SelectAndTranslate(Bounds: Slices, Translation: Translation, DocID: number) {
@@ -159,10 +170,8 @@ export async function ExecuteSlice(
   };
 
   await SelectAndTranslate(NN, NTranslation, DocID);
-  console.log({ NTranslation });
   await SelectAndTranslate(WW, WTranslation, DocID);
   await SelectAndTranslate(CB, CTranslation, DocID);
-
 
   const CenterWidth = SR - SL;
   const CenterHeight = SB - ST;
