@@ -18,6 +18,22 @@
       "id": "MainPanel",
       "label": {
         "default": "MainPanel"
+      },
+      "minimumSize": {
+        "width": 230,
+        "height": 200
+      },
+      "maximumSize": {
+        "width": 460,
+        "height": 1080
+      },
+      "preferredDockedSize": {
+        "width": 230,
+        "height": 300
+      },
+      "preferredFloatingSize": {
+        "width": 230,
+        "height": 300
       }
     },
     {

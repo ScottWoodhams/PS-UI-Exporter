@@ -12,8 +12,10 @@ export enum LogLevel {
 }
 
 export async function Log(Type: LogLevel, Message: string) {
-  const format = `${Type.toString()} ${Message} \n`;
-  LogFile.write(format, { format: storage.formats.utf8, append: true });
+  if(LogFile !== undefined){
+    const format = `${Type.toString()} ${Message} \n`;
+    LogFile.write(format, { format: storage.formats.utf8, append: true });
+  }
 }
 
 export async function CreateLogFile() {

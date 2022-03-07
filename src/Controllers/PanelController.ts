@@ -11,7 +11,6 @@ const PanelController = (component, { menuItems, invokeMenu }) => {
       root = document.createElement('div');
       root.style.height = '100vh';
       root.style.overflow = 'auto';
-      root.style.padding = '10px 20px';
       ReactDOM.render(component, root);
       console.log('Panel created');
     },
