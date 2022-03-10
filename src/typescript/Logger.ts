@@ -1,4 +1,4 @@
-import { storage, shell, host, os, entrypoints } from 'uxp';
+import { storage, shell, host } from 'uxp';
 import { core } from 'photoshop';
 
 const LogFileName = 'UIExportLog.log';
@@ -12,7 +12,7 @@ export enum LogLevel {
 }
 
 export async function Log(Type: LogLevel, Message: string) {
-  if(LogFile !== undefined){
+  if (LogFile !== undefined) {
     const format = `${Type.toString()} ${Message} \n`;
     LogFile.write(format, { format: storage.formats.utf8, append: true });
   }
