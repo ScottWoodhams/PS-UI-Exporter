@@ -366,7 +366,6 @@ async function targetFunction(executionContext: ExecutionContext) {
   await ApplySlices(shapeLayer);
   console.log('finished apply slices');
 
-  // todo export
   executionContext.reportProgress({ value: 0.9, commandName: 'Running Export Process...' });
   await ExportProcess();
   console.log('finished ExportProcess');

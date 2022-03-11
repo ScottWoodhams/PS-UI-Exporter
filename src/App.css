@@ -1,50 +1,51 @@
 :root {
-    --rect-slice-border-color: #3a393a;
-    --rect-slice-border-width: 1px;
+  --rect-slice-border-color: #3a393a;
+  --rect-slice-border-width: 1px;
 }
 
-
 .App {
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    width: 100vw;
-    height: 100vh;
-    flex-direction: column;
-    padding: 12px;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  padding: 12px;
 }
 
 .InitPanel {
-    background: none;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-items: stretch;
-
+  background: none;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: stretch;
 }
 
-.TextDetails{
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    height: 100px;
+.TextDetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100px;
 }
 
-.ColorField{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+.ColorField {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .ColorFieldSquare {
-    background: aqua;
-    height: 10px;
-    width: 10px;
+  background: aqua;
+  height: 10px;
+  width: 10px;
 
-/*    border-color: rgba(0, 0, 0, 0.68);
+  /*    border-color: rgba(0, 0, 0, 0.68);
     border-width: 1px;
     border-style: solid;*/
-    margin-right: 5px;
+  margin-right: 5px;
+}
 
-
+.LayerInformation {
+  width: 100%;
+  display: flex;
 }

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { app, action } from 'photoshop';
 import Spectrum, { Divider } from 'react-uxp-spectrum';
-import SliceRect from '../components/SliceRect';
 import { ReadFromMetaData } from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
 import TextDetails from '../components/TextDetails';
-import {Log, LogLevel} from "../typescript/Logger";
+import { Log, LogLevel } from '../typescript/Logger';
+import InfoBox from '../components/InfoBox';
 
 export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 
@@ -45,14 +45,17 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
 
   return (
     <div>
-      <Spectrum.Heading>Rect Information</Spectrum.Heading>
-      <Divider size="large" />
-      <SliceRect rect={metadata.Bounds} slices={metadata.Slices} sliceType={metadata.SliceType} />
+      <Spectrum.ActionButton onClick={Slice}>Component</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Slice}>Slice</Spectrum.ActionButton>
-      <Spectrum.Heading>Text Information</Spectrum.Heading>
-      <Divider size="large" />
-      {metadata.TextDescriptor !== undefined && <TextDetails desc={metadata.TextDescriptor} />}
       <Spectrum.ActionButton onClick={Export}>Export</Spectrum.ActionButton>
+
+      <div className="LayerInformation">
+        <InfoBox data={metadata.Bounds} title="Bounds" />
+        <InfoBox data={metadata.Slices} title="Slices" />
+        {metadata.TextDescriptor && <InfoBox data={metadata.TextDescriptor} title="Text" />}
+        <InfoBox data={metadata.OutlineDescriptor} title="Outline" />
+        <InfoBox data={metadata.ShadowDescriptor} title="Shadow" />
+      </div>
     </div>
   );
 }
