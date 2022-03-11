@@ -1,6 +1,9 @@
-import { action, app } from 'photoshop';
+import { action, app, core, Document, DocumentCreateOptions, Layer } from 'photoshop';
 import { Slices } from './PSTypes';
 import { Log, LogLevel } from './Logger';
+import * as PSTypes from './PSTypes';
+import { UpdateMetaProperty } from './Metadata';
+import Photoshop from 'photoshop';
 
 export enum Anchor {
   AnchorN = 'QCSSide0',
@@ -207,4 +210,64 @@ export async function ExecuteSlice(
   await SelectAndTranslate(SW, SWTranslation, DocID);
   await SelectAndTranslate(SE, SETranslation, DocID);
   await app.activeDocument.trim('transparent', true, true, true, true);
+}
+
+export async function ApplySlices(layer: Layer) {
+  const topGuide = app.activeDocument.guides[0];
+  const leftGuide = app.activeDocument.guides[1];
+  const bottomGuide = app.activeDocument.guides[2];
+  const rightGuide = app.activeDocument.guides[3];
+
+  const { id } = layer;
+  const slices: PSTypes.Slices = {
+    top: topGuide.coordinate,
+    left: leftGuide.coordinate,
+    bottom: bottomGuide.coordinate,
+    right: rightGuide.coordinate,
+  };
+
+  console.log({ slices });
+
+  await core.executeAsModal(async () => app.activeDocument.closeWithoutSaving(), { commandName: 'closing document' });
+
+  await core.executeAsModal(async () => UpdateMetaProperty(id, 'Slices', slices), {
+    commandName: 'Updating slice property',
+  });
+
+  await core.executeAsModal(async () => UpdateMetaProperty(id, 'SliceType', 'Sliced'), {
+    commandName: 'Updating slice property',
+  });
+}
+
+export async function InitSlices(layer: Layer) {
+  const options: DocumentCreateOptions = {
+    typename: 'NewDocument',
+    fill: 'transparent',
+    height: app.activeDocument.height,
+    mode: 'RGBColorMode',
+    name: 'Image Export',
+    resolution: app.activeDocument.resolution,
+    width: app.activeDocument.width,
+  };
+
+  const exportDocument: Document = await app.createDocument(options);
+  if (exportDocument === null || undefined) {
+    await Log(LogLevel.Error, 'Slice Document is null');
+  }
+
+  const duplicatedLayer: Photoshop.Layer = await layer.duplicate(exportDocument);
+  if (duplicatedLayer === null || undefined) {
+    await Log(LogLevel.Error, 'Slice duplicated layer is null');
+  }
+  await duplicatedLayer.rasterize('entire');
+  await exportDocument.trim('transparent', true, true, true, true);
+
+  exportDocument.guides.add('horizontal', 0);
+  exportDocument.guides.add('vertical', 0);
+  exportDocument.guides.add('horizontal', exportDocument.height);
+  exportDocument.guides.add('vertical', exportDocument.width);
+
+  if (exportDocument.guides.length !== 4) {
+    await Log(LogLevel.Error, '4 guides were not created for slicing');
+  }
 }

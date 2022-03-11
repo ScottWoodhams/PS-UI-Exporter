@@ -96,7 +96,7 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
     await Log(LogLevel.Info, `Layer ${props.Name} has dropShadow: ${hasDropShadow}`);
 
     LayerData.ShadowDescriptor = {
-      angle: hasDropShadow ? props.layerEffects.dropShadow.angle._value : 0,
+      angle: hasDropShadow ? props.layerEffects.dropShadow.localLightingAngle._value : 0,
       distance: hasDropShadow ? props.layerEffects.dropShadow.distance._value : 0,
       color: hasDropShadow ? await ColorDescToColorObj(props.layerEffects.dropShadow.color) : EmptyColor,
     };

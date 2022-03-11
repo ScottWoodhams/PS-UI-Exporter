@@ -46,8 +46,8 @@ export async function InitLayers() {
       layerCount += 1;
       const meta = await ReadFromMetaData(layer.id);
       if (meta === undefined) {
-        const layerData: UILayerData = await LayerDataInit(layer.id);
-        await WriteToMetaData(layer.id, layerData);
+          const layerData: UILayerData = await LayerDataInit(layer.id);
+          await WriteToMetaData(layer.id, layerData);
       }
     })
   );
