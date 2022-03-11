@@ -1,16 +1,43 @@
-import '@babel/polyfill';
-import React from 'react';
-import { entrypoints } from 'uxp';
-import { app, core, action } from 'photoshop';
-import * as uxp from 'uxp';
-import App from './App';
-import PanelController from './Controllers/PanelController';
-import MenuFlyout from './typescript/MenuFlyout';
-import { RunTest } from './typescript/TestSuite';
+import { app, DocumentCreateOptions, core, ExecutionContext, action } from 'photoshop';
 
-console.clear();
+async function targetFunction(executionContext: ExecutionContext) {
+  // todo create new document
+  executionContext.reportProgress({ value: 0.25, commandName: 'Creating New Document And layers' });
+  //let testDoc = await CreateNewDocument();
+  // todo create shape layer
+  //await testDoc.createLayer();
 
-async function targetFunction() {
+  // todo create text layer
+
+  // todo create layer with effects
+
+  // todo create metadata for layers
+  executionContext.reportProgress({ value: 0.5, commandName: 'Applying metadata to layers' });
+
+  // todo slice layer
+  executionContext.reportProgress({ value: 0.75, commandName: 'Slicing layer' });
+
+  // todo export
+  executionContext.reportProgress({ value: 1, commandName: 'Running Export Process...' });
+}
+
+export async function RunTest() {
+  await core.executeAsModal(targetFunction, { commandName: 'User Cancel Test' });
+}
+
+export async function CreateNewDocument() {
+  const options: DocumentCreateOptions = {
+    width: 500,
+    height: 600,
+    resolution: 300,
+    mode: 'RGBColorMode',
+    fill: 'transparent',
+  };
+  return app.createDocument(options);
+}
+
+//todo clean this function
+async function CreateShapeLayer() {
   const result = await action.batchPlay(
     [
       {
@@ -122,19 +149,6 @@ async function targetFunction() {
         },
       },
     ],
-    {
-
-    }
+    {}
   );
 }
-
-async function testFun() {
-  await core.executeAsModal(targetFunction, { commandName: 'User Cancel Test' });
-}
-
-entrypoints.setup({
-  commands: { runTests: RunTest, test: testFun },
-  panels: {
-    MainPanel: PanelController(<App />, { ...MenuFlyout }),
-  },
-});
