@@ -70,6 +70,7 @@ export async function GetMetaProperty(LayerID: number, property: string): Promis
   return metaObj[property];
 }
 
-export async function SetToComponent() {
-
+export async function SetToComponent(LayerID: number, ComponentID: string) {
+  await UpdateMetaProperty(LayerID, 'Component', ComponentID);
+  await UpdateMetaProperty(LayerID, 'IsComponent', true);
 }

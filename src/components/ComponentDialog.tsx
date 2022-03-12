@@ -10,6 +10,8 @@ export default function ComponentDialog({ dialog }: CompDialogProps) {
   const buttonHandler = reason => {
     const retObj = { reason, ID };
     setID('');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore function does exist but not documented
     dialog.close(retObj);
   };
 
@@ -37,8 +39,9 @@ export async function OpenComponentDialog() {
 
   document.body.appendChild(componentDialog);
 
-  // @ts-ignore
-  const result = await componentDialog.uxpShowModal({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore function does exist but not documented
+  return componentDialog.uxpShowModal({
     title: 'Please set component id...',
     resize: 'both',
     size: {
@@ -46,6 +49,4 @@ export async function OpenComponentDialog() {
       height: 240,
     },
   });
-
-  return result;
 }
