@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom';
 import Spectrum from 'react-uxp-spectrum';
 
 export type CompDialogProps = { dialog: HTMLDialogElement };
+export type CompDialogReturn = { reason: string; id: string };
 
 export default function ComponentDialog({ dialog }: CompDialogProps) {
-  const [ID, setID] = useState('');
+  const [id, setID] = useState('');
 
   const buttonHandler = reason => {
-    const retObj = { reason, ID };
+    const retObj: CompDialogReturn = { reason, id };
     setID('');
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore function does exist but not documented
     dialog.close(retObj);

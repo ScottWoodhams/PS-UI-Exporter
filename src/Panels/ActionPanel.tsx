@@ -5,7 +5,7 @@ import { ReadFromMetaData, SetToComponent } from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
 import { Log, LogLevel } from '../typescript/Logger';
 import InfoBox from '../components/InfoBox';
-import { OpenComponentDialog } from '../components/ComponentDialog';
+import { CompDialogReturn, OpenComponentDialog } from '../components/ComponentDialog';
 
 export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 
@@ -36,12 +36,14 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   };
 
   const openCompDialog = async () => {
-    if (app.activeDocument.activeLayers[0].kind !== 'group') {
+    const workingLayer = app.activeDocument.activeLayers[0];
+    if (workingLayer.kind !== 'group') {
       await core.showAlert({ message: 'Must have a group layer selected' });
     } else {
-      const result = await OpenComponentDialog();
-      console.log(result);
-      await SetToComponent();
+      const result: CompDialogReturn = await OpenComponentDialog();
+      if (result.reason === 'Confirm') {
+        await SetToComponent(workingLayer.id, result.id);
+      }
     }
   };
 
