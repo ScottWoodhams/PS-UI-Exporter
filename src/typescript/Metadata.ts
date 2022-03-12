@@ -1,4 +1,4 @@
-import { action, app, core, Layer } from 'photoshop';
+import {action, ActionDescriptor, app, core, Layer} from 'photoshop';
 import UILayerData, { LayerDataInit } from './UILayerData';
 import { Log, LogLevel } from './Logger';
 
@@ -73,4 +73,30 @@ export async function GetMetaProperty(LayerID: number, property: string): Promis
 export async function SetToComponent(LayerID: number, ComponentID: string) {
   await UpdateMetaProperty(LayerID, 'Component', ComponentID);
   await UpdateMetaProperty(LayerID, 'IsComponent', true);
+}
+
+export async function RefreshLayerProperty(){
+  const command = {
+    _obj: 'multiGet',
+    _target: {
+      _ref: [
+        { _ref: 'layer', _id: LayerID },
+        { _ref: 'document', _enum: 'ordinal' },
+      ],
+    },
+    extendedReference: [layerProps],
+    options: { failOnMissingProperty: false, failOnMissingElement: false },
+  };
+
+  const actionDescriptors: ActionDescriptor[] = await action.batchPlay([command], {});
+  const props: ActionDescriptor = actionDescriptors[0];
+
+}
+
+export async function RefreshAllBounds(){
+  await Promise.all(
+      app.activeDocument.layers.map(async (layer: Layer) => {
+        await UpdateMetaProperty(layer.id, 'Bounds', layer.bounds);
+      })
+  );
 }
