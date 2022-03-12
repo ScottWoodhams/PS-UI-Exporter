@@ -21,7 +21,6 @@ export default function App() {
     CurrentPanel: Panels.Action,
   });
 
-
   function GoToActionPanel() {
     setState({ CurrentPanel: Panels.Action });
     Log(LogLevel.Info, 'Set State to Action Panel');

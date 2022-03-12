@@ -1,36 +1,51 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import Spectrum from 'react-uxp-spectrum';
 
-const ComponentDialog = ({ dialog }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export type CompDialogProps = { dialog: HTMLDialogElement };
+
+export default function ComponentDialog({ dialog }: CompDialogProps) {
+  const [ID, setID] = useState('');
 
   const buttonHandler = reason => {
-    const retObj = { reason, credentials: { username, password } };
-    setUsername('');
-    setPassword('');
+    const retObj = { reason, ID };
+    setID('');
     dialog.close(retObj);
   };
 
   return (
-    <form method="dialog" className="aboutDialog">
-      <div className="column">
-        <sp-textfield value={username} tabindex={0} onInput={event => setUsername(event.target.value)}>
-          <sp-label slot="label">ID</sp-label>
-        </sp-textfield>
-        <sp-textfield type="password" value={password} tabindex={1} onInput={event => setPassword(event.target.value)}>
-          <sp-label slot="label">Password</sp-label>
-        </sp-textfield>
-        <sp-button-group>
-          <sp-button tabindex={2} variant="secondary" quiet="quiet" onClick={() => buttonHandler('reasonCanceled')}>
-            Cancel
-          </sp-button>
-          <sp-button tabindex={3} autofocus="autofocus" variant="primary" onClick={() => buttonHandler('OK')}>
-            OK
-          </sp-button>
-        </sp-button-group>
-      </div>
+    <form method="dialog">
+      <sp-heading>Set Component?</sp-heading>
+      <Spectrum.Divider size="large" />
+      <sp-body>Set the layer with the appropriate ID. This will not export this layer and all its children.</sp-body>
+      <Spectrum.Textfield placeholder="Type ID here..." onInput={event => setID(event.target.value)} />
+      <footer>
+        <Spectrum.Button variant="secondary" quiet onClick={() => buttonHandler('Cancel')}>
+          Cancel
+        </Spectrum.Button>
+        <Spectrum.Button variant="cta" onClick={() => buttonHandler('Confirm')}>
+          Set
+        </Spectrum.Button>
+      </footer>
     </form>
   );
-};
-export default ComponentDialog;
+}
+
+export async function OpenComponentDialog() {
+  const componentDialog = document.createElement('dialog');
+  ReactDOM.render(<ComponentDialog dialog={componentDialog} />, componentDialog);
+
+  document.body.appendChild(componentDialog);
+
+  // @ts-ignore
+  const result = await componentDialog.uxpShowModal({
+    title: 'Please set component id...',
+    resize: 'both',
+    size: {
+      width: 480,
+      height: 240,
+    },
+  });
+
+  return result;
+}
