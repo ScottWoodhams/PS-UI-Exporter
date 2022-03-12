@@ -13,6 +13,7 @@ export type SlicePanelProps = { onFinished: () => void; layer: Photoshop.Layer }
 
 // todo improve ui
 // todo show slice values in ui
+// todo pick slice type
 
 export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
   const events: string[] = ['select'];

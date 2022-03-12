@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from "react";
 import { app } from 'photoshop';
 import './App.css';
 import InitPanel from './Panels/InitPanel';
@@ -6,6 +6,8 @@ import ActionPanel from './Panels/ActionPanel';
 import { ExportPanel } from './Panels/ExportPanel';
 import { SlicePanel } from './Panels/SlicePanel';
 import {Log, LogLevel} from "./typescript/Logger";
+import ReactDOM from "react-dom";
+import AuthPopup from "./components/ComponentDialog";
 
 export enum Panels {
   Initialise,
@@ -18,6 +20,7 @@ export default function App() {
   const [state, setState] = React.useState({
     CurrentPanel: Panels.Action,
   });
+
 
   function GoToActionPanel() {
     setState({ CurrentPanel: Panels.Action });

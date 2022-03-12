@@ -1,0 +1,3 @@
+function OpenComponentDialog() {}
+
+function UpdateLayerToComponent() {}

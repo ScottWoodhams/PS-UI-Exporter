@@ -11,7 +11,7 @@ export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 
 // todo improve ui layout
 // todo add refresh for bounds
-// todo add component button
+// todo add component button functionality
 
 export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   const emptyData = new UILayerData();
@@ -51,10 +51,10 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
 
       <div className="LayerInformation">
         <InfoBox data={metadata.Bounds} title="Bounds" />
-        <InfoBox data={metadata.Slices} title="Slices" />
+        {metadata.Slices && <InfoBox data={metadata.Slices} title="Slices" />}
         {metadata.TextDescriptor && <InfoBox data={metadata.TextDescriptor} title="Text" />}
-        <InfoBox data={metadata.OutlineDescriptor} title="Outline" />
-        <InfoBox data={metadata.ShadowDescriptor} title="Shadow" />
+        {metadata.OutlineDescriptor && <InfoBox data={metadata.OutlineDescriptor} title="Outline" />}
+        {metadata.ShadowDescriptor && <InfoBox data={metadata.ShadowDescriptor} title="Shadow" />}
       </div>
     </div>
   );

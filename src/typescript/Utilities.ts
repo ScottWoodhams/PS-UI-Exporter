@@ -1,12 +1,13 @@
 import { storage } from 'uxp';
 
-import { app, ColorDescriptor, Document, DocumentCreateOptions, Layer, PsRGBColorSpace, RGBColor } from 'photoshop';
+import {action, ActionDescriptor, app, ColorDescriptor, Document, DocumentCreateOptions, Layer, PsRGBColorSpace, RGBColor } from 'photoshop';
 import UILayerData from './UILayerData';
 
 import { ExecuteSlice } from './SliceOperation';
 import { ELayerType, Rect } from './PSTypes';
 import { Log, LogLevel } from './Logger';
 import * as PSTypes from './PSTypes';
+import { ReadFromMetaData } from './Metadata';
 
 /**
  * simplifying data for easier reading and exporting
@@ -79,3 +80,34 @@ export async function IsTexture(kind: ELayerType): Promise<boolean> {
   );
 }
 
+export async function GetTextureCount() {
+  const layers = app.activeDocument.layers;
+  let textureCount = 0;
+  for (let i = 0; i < layers.length; i++) {
+    const metaString: string = await ReadFromMetaData(layers[i].id);
+    const layerData: UILayerData = JSON.parse(metaString);
+    const isTexture: boolean = await IsTexture(layerData.LayerType);
+    if (isTexture) {
+      textureCount += 1;
+    }
+  }
+
+  return textureCount;
+}
+
+export async function GetFonts(){
+  const layers = app.activeDocument.layers;
+  let fonts = [];
+
+  for (let i = 0; i < layers.length; i++) {
+    const metaString: string = await ReadFromMetaData(layers[i].id);
+    const layerData: UILayerData = JSON.parse(metaString);
+    if(layerData.LayerType === ELayerType.text){
+
+      fonts.push(layerData.TextDescriptor.fontName);
+
+    }
+  }
+
+  return fonts;
+}
