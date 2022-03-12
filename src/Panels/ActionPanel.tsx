@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { app, action } from 'photoshop';
-import Spectrum, { Divider } from 'react-uxp-spectrum';
+import Spectrum from 'react-uxp-spectrum';
+import ReactDOM from 'react-dom';
 import { ReadFromMetaData } from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
-import TextDetails from '../components/TextDetails';
 import { Log, LogLevel } from '../typescript/Logger';
 import InfoBox from '../components/InfoBox';
+import ComponentDialog from '../components/ComponentDialog';
 
 export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 
@@ -17,6 +18,24 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   const emptyData = new UILayerData();
   const [metadata, setCurrentMeta] = useState(emptyData);
   const events: string[] = ['select'];
+  let componentDialog; // Reference for the <dialog> element
+
+  const requestAuth = async () => {
+    if (componentDialog === undefined) {
+      componentDialog = document.createElement('dialog');
+      ReactDOM.render(<ComponentDialog dialog={componentDialog} />, componentDialog);
+    }
+    document.body.appendChild(componentDialog);
+
+    await componentDialog.uxpShowModal({
+      title: 'Please set component id...',
+      resize: 'both',
+      size: {
+        width: 400,
+        height: 200,
+      },
+    });
+  };
 
   const listener = async () => {
     const i: number = app.activeDocument.activeLayers[0].id;
@@ -48,6 +67,7 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
       <Spectrum.ActionButton onClick={Slice}>Component</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Slice}>Slice</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Export}>Export</Spectrum.ActionButton>
+      <Spectrum.ActionButton onClick={requestAuth}>popup</Spectrum.ActionButton>
 
       <div className="LayerInformation">
         <InfoBox data={metadata.Bounds} title="Bounds" />
