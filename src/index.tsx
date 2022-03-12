@@ -4,7 +4,7 @@ import { entrypoints } from 'uxp';
 import { core } from 'photoshop';
 import App from './App';
 import PanelController from './Controllers/PanelController';
-import MenuFlyout from './typescript/MenuFlyout';
+import {LoggingMenuItem, MainPanelInvokeMenu} from './typescript/MenuFlyout';
 import { RunTest } from './typescript/TestSuite';
 
 async function testFun() {
@@ -14,6 +14,6 @@ async function testFun() {
 entrypoints.setup({
   commands: { runTests: RunTest, test: testFun },
   panels: {
-    MainPanel: PanelController(<App />, { ...MenuFlyout }),
-  },
+    MainPanel: PanelController(<App />, { menuItems: [ LoggingMenuItem ], invokeMenu: MainPanelInvokeMenu})
+  }
 });

@@ -1,6 +1,9 @@
 import ReactDOM from 'react-dom';
-// todo replace with function for consistency
-const PanelController = (component, { menuItems, invokeMenu }) => {
+import {MenuItem} from '../typescript/MenuFlyout';
+
+export type PanelControllerProps = { menuItems: MenuItem[]; invokeMenu: (id) => Promise<void> };
+
+export default function PanelController(component: JSX.Element, { menuItems, invokeMenu }: PanelControllerProps) {
   let root = null;
   let attachment = null;
 
@@ -26,6 +29,4 @@ const PanelController = (component, { menuItems, invokeMenu }) => {
   };
 
   return controller;
-};
-
-export default PanelController;
+}
