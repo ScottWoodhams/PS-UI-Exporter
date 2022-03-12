@@ -1,4 +1,4 @@
-import { action, app, core, ExecuteAsModalOptions, ExecutionContext, Layer } from 'photoshop';
+import { action, app, core, Layer } from 'photoshop';
 import UILayerData, { LayerDataInit } from './UILayerData';
 import { Log, LogLevel } from './Logger';
 

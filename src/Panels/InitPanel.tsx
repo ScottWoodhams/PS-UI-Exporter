@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { action, app, core, ExecuteAsModalOptions } from 'photoshop';
 import Spectrum from 'react-uxp-spectrum';
 import { InitLayers } from '../typescript/Metadata';
-import ColorField from "../components/ColorField";
-import {EmptyColor} from "../typescript/Utilities";
+
+// todo can merge this into the action panel to reduce fragmentation
 
 export type InitPanelProps = { onFinished: () => void };
 

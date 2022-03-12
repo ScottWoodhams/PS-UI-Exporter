@@ -344,31 +344,30 @@ async function ApplyLayerEffects() {
 
 async function targetFunction(executionContext: ExecutionContext) {
   executionContext.reportProgress({ value: 0.25, commandName: 'Creating New Document And layers' });
+
   app.activeDocument = await CreateNewDocument();
-  console.log('Creating New Document And layers');
   await CreateShapeLayer();
+
   const shapeLayer = app.activeDocument.layers[0];
   app.activeDocument.activeLayers.push(shapeLayer);
+
   await ApplyLayerEffects();
-  console.log('finished ApplyLayerEffects');
   await CreateTextLayer();
-  console.log('finished CreateTextLayer');
   executionContext.reportProgress({ value: 0.5, commandName: 'Applying metadata to layers' });
+
   await InitLayers();
-  console.log('finished apply meta');
   executionContext.reportProgress({ value: 0.75, commandName: 'Slicing layer' });
+
   await InitSlices(shapeLayer);
-  console.log('finished init slices');
+
   app.activeDocument.guides[0].coordinate = 100;
   app.activeDocument.guides[1].coordinate = 100;
   app.activeDocument.guides[2].coordinate = app.activeDocument.width - 100;
   app.activeDocument.guides[3].coordinate = app.activeDocument.height - 100;
   await ApplySlices(shapeLayer);
-  console.log('finished apply slices');
 
   executionContext.reportProgress({ value: 0.9, commandName: 'Running Export Process...' });
   await ExportProcess();
-  console.log('finished ExportProcess');
 }
 
 export async function RunTest() {

@@ -3,7 +3,6 @@ import { Slices } from './PSTypes';
 import { Log, LogLevel } from './Logger';
 import * as PSTypes from './PSTypes';
 import { UpdateMetaProperty } from './Metadata';
-import Photoshop from 'photoshop';
 
 export enum Anchor {
   AnchorN = 'QCSSide0',
@@ -55,7 +54,6 @@ export async function Select(Bounds: Slices) {
       {}
     );
   } catch (e) {
-    console.log(e);
     await Log(LogLevel.Error, e);
   }
 }
@@ -78,7 +76,6 @@ export async function Deselect(id: number) {
       {}
     );
   } catch (e) {
-    console.log(e);
     await Log(LogLevel.Error, e);
   }
 }
@@ -106,7 +103,6 @@ export async function TranslateSelection(Translation: Translation) {
       {}
     );
   } catch (e) {
-    console.log(e);
     await Log(LogLevel.Error, e);
   }
 }
@@ -133,7 +129,7 @@ export async function ExecuteSlice(
   const CH = CanvasHeight;
   const CW = CanvasWidth;
 
-  const NW: Slices = { top: ZO, left: ZO, bottom: ST, right: SL };
+  // const NW: Slices = { top: ZO, left: ZO, bottom: ST, right: SL };
   const NN: Slices = { top: ZO, left: SL, bottom: ST, right: SR };
   const NE: Slices = { top: ZO, left: SR, bottom: ST, right: CW };
 
@@ -226,8 +222,6 @@ export async function ApplySlices(layer: Layer) {
     right: rightGuide.coordinate,
   };
 
-  console.log({ slices });
-
   await core.executeAsModal(async () => app.activeDocument.closeWithoutSaving(), { commandName: 'closing document' });
 
   await core.executeAsModal(async () => UpdateMetaProperty(id, 'Slices', slices), {
@@ -255,7 +249,7 @@ export async function InitSlices(layer: Layer) {
     await Log(LogLevel.Error, 'Slice Document is null');
   }
 
-  const duplicatedLayer: Photoshop.Layer = await layer.duplicate(exportDocument);
+  const duplicatedLayer: Layer = await layer.duplicate(exportDocument);
   if (duplicatedLayer === null || undefined) {
     await Log(LogLevel.Error, 'Slice duplicated layer is null');
   }

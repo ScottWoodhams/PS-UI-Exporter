@@ -53,14 +53,6 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
     await Log(LogLevel.Error, 'Failed to create png file');
   }
 
-  const saveOptions = {
-    alphaChannels: true,
-    annotations: false,
-    layers: false,
-    embedColorProfile: false,
-    spotColors: false,
-  };
-
   await exportDocument.saveAs.png(pngFile);
   await exportDocument.closeWithoutSaving();
 }
@@ -100,8 +92,6 @@ export async function ExportProcess() {
       }
     })
   );
-
-  console.table(data);
 
   await WriteToJSONFile(JSON.stringify(data), folder);
 }

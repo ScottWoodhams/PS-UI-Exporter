@@ -1,15 +1,10 @@
 import React, { useEffect } from 'react';
 import Spectrum from 'react-uxp-spectrum';
-import { action, app, core, Document, DocumentCreateOptions } from 'photoshop';
+import { action, app, core, Layer } from 'photoshop';
 
-import * as Photoshop from 'photoshop';
-import * as PSTypes from '../typescript/PSTypes';
+import { ApplySlices, InitSlices } from '../typescript/SliceOperation';
 
-import { UpdateMetaProperty } from '../typescript/Metadata';
-import { Log, LogLevel } from '../typescript/Logger';
-import {ApplySlices, InitSlices} from '../typescript/SliceOperation';
-
-export type SlicePanelProps = { onFinished: () => void; layer: Photoshop.Layer };
+export type SlicePanelProps = { onFinished: () => void; layer: Layer };
 
 // todo improve ui
 // todo show slice values in ui

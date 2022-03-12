@@ -1,13 +1,11 @@
-import React, { useRef } from "react";
+import React from 'react';
 import { app } from 'photoshop';
 import './App.css';
 import InitPanel from './Panels/InitPanel';
 import ActionPanel from './Panels/ActionPanel';
 import { ExportPanel } from './Panels/ExportPanel';
 import { SlicePanel } from './Panels/SlicePanel';
-import {Log, LogLevel} from "./typescript/Logger";
-import ReactDOM from "react-dom";
-import AuthPopup from "./components/ComponentDialog";
+import { Log, LogLevel } from './typescript/Logger';
 
 export enum Panels {
   Initialise,
@@ -21,19 +19,19 @@ export default function App() {
     CurrentPanel: Panels.Action,
   });
 
-  function GoToActionPanel() {
+  async function GoToActionPanel() {
     setState({ CurrentPanel: Panels.Action });
-    Log(LogLevel.Info, 'Set State to Action Panel');
+    await Log(LogLevel.Info, 'Set State to Action Panel');
   }
 
-  function GoToExportPanel() {
+  async function GoToExportPanel() {
     setState({ CurrentPanel: Panels.Export });
-    Log(LogLevel.Info, 'Set State to Export Panel');
+    await Log(LogLevel.Info, 'Set State to Export Panel');
   }
 
-  function GoToSlicePanel() {
+  async function GoToSlicePanel() {
     setState({ CurrentPanel: Panels.Slice });
-    Log(LogLevel.Info, 'Set State to Slice Panel');
+    await Log(LogLevel.Info, 'Set State to Slice Panel');
   }
 
   return (

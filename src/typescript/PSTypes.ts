@@ -1,4 +1,4 @@
-import {Bounds, RGBColor} from 'photoshop';
+import { RGBColor } from 'photoshop';
 
 export enum ELayerType {
   any = 0,
@@ -18,8 +18,6 @@ export enum ELayerType {
 }
 
 export type SliceType = 'None' | 'Sliced' | 'Tiled';
-
-export type RectProps = { rect: Bounds; slices: Slices };
 
 export interface FrameFXDescriptor {
   size: number;
@@ -54,11 +52,4 @@ export interface TextDescriptor {
   textKey: string;
   type: string;
   color: RGBColor;
-}
-
-export interface Color {
-  Hex: string;
-  Red: number;
-  Green: number;
-  Blue: number;
 }

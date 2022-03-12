@@ -5,7 +5,7 @@ import Spectrum from 'react-uxp-spectrum';
 export type CompDialogProps = { dialog: HTMLDialogElement };
 export type CompDialogReturn = { reason: string; id: string };
 
-export default function ComponentDialog({ dialog }: CompDialogProps) {
+function ComponentDialog({ dialog }: CompDialogProps) {
   const [id, setID] = useState('');
 
   const buttonHandler = reason => {

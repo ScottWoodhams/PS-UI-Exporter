@@ -1,13 +1,10 @@
 import { storage } from 'uxp';
 
-import {action, ActionDescriptor, app, ColorDescriptor, Document, DocumentCreateOptions, Layer, PsRGBColorSpace, RGBColor } from 'photoshop';
+import { app, PsRGBColorSpace, RGBColor } from 'photoshop';
 import UILayerData from './UILayerData';
-
-import { ExecuteSlice } from './SliceOperation';
 import { ELayerType, Rect } from './PSTypes';
-import { Log, LogLevel } from './Logger';
-import * as PSTypes from './PSTypes';
 import { ReadFromMetaData } from './Metadata';
+import * as uxp from 'uxp';
 
 /**
  * simplifying data for easier reading and exporting
@@ -56,7 +53,7 @@ export async function ColorDescToColorObj(value: PsRGBColorSpace) {
   return Color;
 }
 
-export async function WriteToJSONFile(jsonString: string, folder: storage.Folder) {
+export async function WriteToJSONFile(jsonString: string, folder: uxp.storage.Folder) {
   const saveOptions = { overwrite: true };
   const jsonFile = await folder.createFile('PSJson.json', saveOptions);
 
@@ -95,17 +92,15 @@ export async function GetTextureCount() {
   return textureCount;
 }
 
-export async function GetFonts(){
+export async function GetFonts() {
   const layers = app.activeDocument.layers;
   let fonts = [];
 
   for (let i = 0; i < layers.length; i++) {
     const metaString: string = await ReadFromMetaData(layers[i].id);
     const layerData: UILayerData = JSON.parse(metaString);
-    if(layerData.LayerType === ELayerType.text){
-
+    if (layerData.LayerType === ELayerType.text) {
       fonts.push(layerData.TextDescriptor.fontName);
-
     }
   }
 

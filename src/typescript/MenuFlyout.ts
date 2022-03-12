@@ -1,7 +1,8 @@
 import { entrypoints } from 'uxp';
 import photoshop from 'photoshop';
-import {CreateLogFile, DeleteLogFile, OpenLogFile} from './Logger';
+import { CreateLogFile, DeleteLogFile, OpenLogFile } from './Logger';
 
+// noinspection JSUnusedGlobalSymbols
 export default {
   menuItems: [
     {
@@ -15,7 +16,9 @@ export default {
     { id: 'about', label: 'About' },
   ],
   async invokeMenu(id) {
-    // @ts-ignore
+
+    // does return a value but not documented
+    // noinspection JSVoidFunctionReturnValueUsed
     const { menuItems } = entrypoints.getPanel('MainPanel');
 
     switch (id) {
@@ -31,10 +34,10 @@ export default {
         await OpenLogFile();
         break;
       case 'about':
-        photoshop.app.showAlert('Thanks for trying this UXP plugin!');
+        await photoshop.app.showAlert('Thanks for trying this UXP plugin!');
         break;
       default:
-        photoshop.app.showAlert(`${id} feature is not supported`);
+        await photoshop.app.showAlert(`${id} feature is not supported`);
     }
   },
 };

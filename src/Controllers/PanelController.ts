@@ -1,22 +1,15 @@
 import ReactDOM from 'react-dom';
-import {CreateLogFile} from "../typescript/Logger";
-
+// todo replace with function for consistency
 const PanelController = (component, { menuItems, invokeMenu }) => {
-  console.log(component);
   let root = null;
   let attachment = null;
 
   const controller = {
-   async create() {
+    async create() {
       root = document.createElement('div');
       root.style.height = '100vh';
       root.style.overflow = 'auto';
       ReactDOM.render(component, root);
-      console.log('Panel created');
-    },
-
-    destroy() {
-      console.log('Panel destroyed');
     },
 
     show({ node }) {
@@ -24,20 +17,10 @@ const PanelController = (component, { menuItems, invokeMenu }) => {
         controller.create();
       }
       if (!attachment) {
-        attachment = node; // the body
+        attachment = node;
         attachment.appendChild(root);
       }
-      console.log('Panel shown');
     },
-
-    hide() {
-      if (attachment && root) {
-        attachment.removeChild(root);
-        attachment = null;
-      }
-      console.log('Panel hidden');
-    },
-
     menuItems,
     invokeMenu,
   };

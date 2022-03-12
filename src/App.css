@@ -20,33 +20,3 @@
   flex-wrap: wrap;
   align-items: stretch;
 }
-
-.TextDetails {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  height: 100px;
-}
-
-.ColorField {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.ColorFieldSquare {
-  background: aqua;
-  height: 10px;
-  width: 10px;
-
-  /*    border-color: rgba(0, 0, 0, 0.68);
-    border-width: 1px;
-    border-style: solid;*/
-  margin-right: 5px;
-}
-
-.LayerInformation {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-}
