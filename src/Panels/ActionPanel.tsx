@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { app, action, core } from 'photoshop';
+import {app, action, core, ExecuteAsModalOptions} from 'photoshop';
 import Spectrum from 'react-uxp-spectrum';
-import { ReadFromMetaData, SetToComponent } from '../typescript/Metadata';
+import {InitLayers, ReadFromMetaData, SetToComponent} from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
 import { Log, LogLevel } from '../typescript/Logger';
 import InfoBox from '../components/InfoBox';
@@ -15,16 +15,25 @@ export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   const emptyData = new UILayerData();
   const [metadata, setCurrentMeta] = useState(emptyData);
-  const events: string[] = ['select'];
+  const [isInDocument, updateDocumentInUse] = useState(false);
+  const events: string[] = ['select', 'open', 'close'];
 
-  const listener = async () => {
-    const i: number = app.activeDocument.activeLayers[0].id;
-    const meta = await ReadFromMetaData(i);
-    if (meta === null || undefined) {
-      await Log(LogLevel.Error, 'Meta is null or undefined');
+  const listener = async (event) => {
+    if(event === "select"){
+      const i: number = app.activeDocument.activeLayers[0].id;
+      const meta = await ReadFromMetaData(i);
+      const LayerData: UILayerData = JSON.parse(meta);
+      setCurrentMeta(LayerData);
     }
-    const LayerData: UILayerData = JSON.parse(meta);
-    setCurrentMeta(LayerData);
+
+    if(event === 'open' || event === 'close'){
+      updateDocumentInUse(app.activeDocument !== null);
+      if(isInDocument){
+        const options: ExecuteAsModalOptions = { commandName: 'Writing metadata to all layers' };
+        await core.executeAsModal(InitLayers, options);
+      }
+    }
+
   };
 
   const Export = () => {
@@ -49,13 +58,19 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
 
   useEffect(() => {
     action.addNotificationListener(events, listener);
+    updateDocumentInUse(app.activeDocument !== null);
     return () => {
       action.removeNotificationListener(events, listener);
     };
   });
 
+  if(!isInDocument) {
+    return <Spectrum.Heading size="M"> Open a document to start.</Spectrum.Heading>
+  }
+
   return (
-    <div>
+
+      <div>
       <Spectrum.ActionButton onClick={openCompDialog}>Component</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Slice}>Slice</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Export}>Export</Spectrum.ActionButton>

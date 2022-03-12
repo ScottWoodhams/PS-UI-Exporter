@@ -1,14 +1,12 @@
 import React from 'react';
 import { app } from 'photoshop';
 import './App.css';
-import InitPanel from './Panels/InitPanel';
 import ActionPanel from './Panels/ActionPanel';
 import { ExportPanel } from './Panels/ExportPanel';
 import { SlicePanel } from './Panels/SlicePanel';
 import { Log, LogLevel } from './typescript/Logger';
 
 export enum Panels {
-  Initialise,
   Action,
   Export,
   Slice,
@@ -36,7 +34,6 @@ export default function App() {
 
   return (
     <div className="App">
-      {state.CurrentPanel === Panels.Initialise && <InitPanel onFinished={GoToActionPanel} />}
       {state.CurrentPanel === Panels.Action && <ActionPanel onExport={GoToExportPanel} onSlice={GoToSlicePanel} />}
       {state.CurrentPanel === Panels.Export && <ExportPanel onFinished={GoToActionPanel} />}
       {state.CurrentPanel === Panels.Slice && (
