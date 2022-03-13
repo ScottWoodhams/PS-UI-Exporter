@@ -1,6 +1,7 @@
-import {action, ActionDescriptor, app, core, Layer} from 'photoshop';
+import { action, ActionDescriptor, app, core, ExecutionContext, Layer } from 'photoshop';
 import UILayerData, { LayerDataInit } from './UILayerData';
 import { Log, LogLevel } from './Logger';
+import { ColorDescToColorObj } from './Utilities';
 
 export async function WriteToMetaData(LayerId: number, data: UILayerData) {
   const content = JSON.stringify(data);
@@ -38,9 +39,10 @@ export async function ReadFromMetaData(LayerId: number) {
   return result[0].XMPMetadataAsUTF8;
 }
 
-export async function InitLayers() {
+export async function InitLayers(executionControl: ExecutionContext) {
   const totalLayers: number = app.activeDocument.layers.length;
   let layerCount = 0;
+
   await Promise.all(
     app.activeDocument.layers.map(async (layer: Layer) => {
       layerCount += 1;
@@ -75,12 +77,14 @@ export async function SetToComponent(LayerID: number, ComponentID: string) {
   await UpdateMetaProperty(LayerID, 'IsComponent', true);
 }
 
-export async function RefreshLayerProperty(){
+export async function RefreshText() {
+  const layerProps = ['textKey', 'metaData'];
+
   const command = {
     _obj: 'multiGet',
     _target: {
       _ref: [
-        { _ref: 'layer', _id: LayerID },
+        { _ref: 'layer', _id: app.activeDocument.activeLayers[0].id },
         { _ref: 'document', _enum: 'ordinal' },
       ],
     },
@@ -91,12 +95,44 @@ export async function RefreshLayerProperty(){
   const actionDescriptors: ActionDescriptor[] = await action.batchPlay([command], {});
   const props: ActionDescriptor = actionDescriptors[0];
 
+  const LayerData: UILayerData = JSON.parse(props.metaData);
+
+  LayerData.TextDescriptor = {
+    fontName: props.textKey.textStyleRange[0].textStyle.fontName,
+    size: props.textKey.textStyleRange[0].textStyle.size._value,
+    textKey: props.textKey.textKey,
+    type: props.textKey.textShape[0].char._value,
+    color: await ColorDescToColorObj(props.textKey.textStyleRange[0].textStyle.color),
+  };
+
+  await WriteToMetaData(app.activeDocument.activeLayers[0].id, LayerData);
 }
 
-export async function RefreshAllBounds(){
+async function ClearMetaData(LayerId: number) {
+  const command = {
+    _obj: 'set',
+    _target: [
+      { _ref: 'property', _property: 'XMPMetadataAsUTF8' },
+      { _ref: 'layer', _id: LayerId },
+    ],
+    to: {
+      _obj: 'layer',
+      XMPMetadataAsUTF8: '',
+    },
+    options: { failOnMissingProperty: true, failOnMissingElement: true },
+  };
+
+  await action.batchPlay([command], {});
+}
+
+export async function RefreshAllLayers() {
   await Promise.all(
-      app.activeDocument.layers.map(async (layer: Layer) => {
-        await UpdateMetaProperty(layer.id, 'Bounds', layer.bounds);
-      })
+    app.activeDocument.layers.map(async (layer: Layer) => {
+      if (layer.kind !== 'group') {
+        await ClearMetaData(layer.id);
+        const layerData: UILayerData = await LayerDataInit(layer.id);
+        await WriteToMetaData(layer.id, layerData);
+      }
+    })
   );
 }

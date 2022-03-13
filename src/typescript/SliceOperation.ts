@@ -249,7 +249,7 @@ export async function InitSlices(layer: Layer) {
     await Log(LogLevel.Error, 'Slice Document is null');
   }
 
-  const duplicatedLayer: Layer = await layer.duplicate(exportDocument);
+  const duplicatedLayer: Layer = await layer.duplicate(exportDocument, 'placeAtBeginning');
   if (duplicatedLayer === null || undefined) {
     await Log(LogLevel.Error, 'Slice duplicated layer is null');
   }

@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { app, action, core, ExecuteAsModalOptions } from 'photoshop';
 import Spectrum from 'react-uxp-spectrum';
-import {InitLayers, ReadFromMetaData, RefreshAllBounds, SetToComponent} from '../typescript/Metadata';
+import { InitLayers, ReadFromMetaData, RefreshAllLayers, SetToComponent } from '../typescript/Metadata';
 import UILayerData from '../typescript/UILayerData';
-import { Log, LogLevel } from '../typescript/Logger';
 import InfoBox from '../components/InfoBox';
 import { CompDialogReturn, OpenComponentDialog } from '../components/ComponentDialog';
 
 export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 
 // todo improve ui layout
-// todo add refresh for bounds
 
 export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   const emptyData = new UILayerData();
@@ -55,7 +53,13 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
     }
   };
 
+  const refreshLayers = async () => {
+    await core.executeAsModal(RefreshAllLayers, { commandName: 'Refreshing metadata' });
+    await core.showAlert({ message: 'Refreshed layers, components havent been reset.' });
+  };
+
   useEffect(() => {
+    core.executeAsModal(InitLayers, { commandName: 'Creating metadata...' });
     action.addNotificationListener(events, listener);
     updateDocumentInUse(app.activeDocument !== null);
     return () => {
@@ -69,7 +73,7 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
 
   return (
     <div>
-      <Spectrum.ActionButton onClick={RefreshAllBounds}>Refresh Bounds</Spectrum.ActionButton>
+      <Spectrum.ActionButton onClick={refreshLayers}>Refresh</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={openCompDialog}>Component</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Slice}>Slice</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Export}>Export</Spectrum.ActionButton>

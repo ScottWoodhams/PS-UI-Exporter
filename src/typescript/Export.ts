@@ -30,7 +30,7 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   if (exportDocument === null) {
     await Log(LogLevel.Error, 'ExportDocument is null');
   }
-  const duplicatedLayer = await layer.duplicate(exportDocument);
+  const duplicatedLayer = await layer.duplicate(exportDocument, "placeAtBeginning");
 
   if (duplicatedLayer === null) {
     await Log(LogLevel.Error, 'duplicated layer is null');

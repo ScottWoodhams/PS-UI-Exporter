@@ -7,6 +7,8 @@ import PanelController from './Controllers/PanelController';
 import {LoggingMenuItem, MainPanelInvokeMenu} from './typescript/MenuFlyout';
 import { RunTest } from './typescript/TestSuite';
 
+console.clear();
+
 async function testFun() {
   await core.showAlert({ message: 'Running Test Function' });
 }
