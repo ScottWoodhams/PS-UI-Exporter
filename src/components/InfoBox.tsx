@@ -15,10 +15,10 @@ export default function InfoBox({ data, title }: SliceRectProps) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100px' }}>
-      <Spectrum.Heading>{title}</Spectrum.Heading>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '150px' }}>
+      <Spectrum.Heading style={{ marginBottom: 20}}>{title}</Spectrum.Heading>
       <Divider size="large" />
-      <sp-textarea disabled style={{ height: '100px' }}>
+      <sp-textarea disabled style={{ height: '100%' }}>
         {rectString}
       </sp-textarea>
     </div>

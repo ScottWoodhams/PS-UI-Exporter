@@ -84,7 +84,7 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
   if (props.layerEffects !== undefined) {
     await Log(LogLevel.Info, `Layer ${props.Name} has LayerEffects`);
 
-    const hasOutline = props.layerEffects.frameFX !== null;
+    const hasOutline = props.layerEffects.frameFX !== undefined;
     await Log(LogLevel.Info, `Layer ${props.Name} has outline: ${hasOutline}`);
 
     LayerData.OutlineDescriptor = {
