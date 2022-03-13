@@ -24,10 +24,15 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
   };
 
   const Init = async () => {
-    await InitSlices(layer);
+    try {
+      await InitSlices(layer);
+    } catch (e){
+      console.log("Slice Init: " + e);
+    }
   };
 
   useEffect(() => {
+    console.log("slice panel use effect");
     action.addNotificationListener(events, Exit);
     core.executeAsModal(Init, { commandName: 'Performing slice setup' });
     return () => {

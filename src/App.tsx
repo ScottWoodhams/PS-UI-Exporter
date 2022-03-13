@@ -28,6 +28,7 @@ export default function App() {
   }
 
   async function GoToSlicePanel() {
+    console.log("Go to slice panel called");
     setState({ CurrentPanel: Panels.Slice });
     await Log(LogLevel.Info, 'Set State to Slice Panel');
   }
