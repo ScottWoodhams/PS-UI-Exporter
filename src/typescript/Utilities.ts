@@ -46,10 +46,11 @@ export async function ColorDescToColorObj(value: PsRGBColorSpace) {
     typename: 'rgb',
   };
 
-  Color.hexValue = RGBToHex(value.red, value.grain, value.blue);
-  Color.red = value.red;
-  Color.green = value.grain;
-  Color.blue = value.blue;
+  Color.red = Math.round(value.red);
+  Color.green = Math.round(value.grain);
+  Color.blue = Math.round(value.blue);
+  Color.hexValue = RGBToHex(Color.red, Color.green, Color.blue);
+
   return Color;
 }
 

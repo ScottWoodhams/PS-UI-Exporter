@@ -17,6 +17,8 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   const events: string[] = ['select', 'open', 'close'];
 
   const listener = async event => {
+    console.log(event);
+
     if (event === 'select') {
       const i: number = app.activeDocument.activeLayers[0].id;
       const meta = await ReadFromMetaData(i);
@@ -25,6 +27,7 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
     }
 
     if (event === 'open' || event === 'close') {
+
       updateDocumentInUse(app.activeDocument !== null);
       if (isInDocument) {
         const options: ExecuteAsModalOptions = { commandName: 'Writing metadata to all layers' };
@@ -77,14 +80,7 @@ export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
       <Spectrum.ActionButton onClick={openCompDialog}>Component</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Slice}>Slice</Spectrum.ActionButton>
       <Spectrum.ActionButton onClick={Export}>Export</Spectrum.ActionButton>
-
-    {/*  <div className="LayerInformation">
-        <InfoBox data={metadata.Bounds} title="Bounds" />
-        {metadata.Slices && <InfoBox data={metadata.Slices} title="Slices" />}
-        {metadata.TextDescriptor && <InfoBox data={metadata.TextDescriptor} title="Text" />}
-        {metadata.OutlineDescriptor && <InfoBox data={metadata.OutlineDescriptor} title="Outline" />}
-        {metadata.ShadowDescriptor && <InfoBox data={metadata.ShadowDescriptor} title="Shadow" />}
-      </div>*/}
+      <InfoBox data={metadata}/>
     </div>
   );
 }
