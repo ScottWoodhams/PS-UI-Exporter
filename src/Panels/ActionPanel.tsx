@@ -8,8 +8,6 @@ import { CompDialogReturn, OpenComponentDialog } from '../components/ComponentDi
 
 export type ActionPanelProps = { onExport: () => void; onSlice: () => void };
 
-// todo improve ui layout
-
 export default function ActionPanel({ onExport, onSlice }: ActionPanelProps) {
   const emptyData = new UILayerData();
   const [metadata, setCurrentMeta] = useState(emptyData);

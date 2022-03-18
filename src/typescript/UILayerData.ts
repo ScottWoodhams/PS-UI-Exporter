@@ -71,7 +71,6 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
 
   if (LayerData.LayerType === ELayerType.text) {
     await Log(LogLevel.Info, `Layer ${props.Name} is classed as text`);
-
     LayerData.TextDescriptor = {
       fontName: props.textKey.textStyleRange[0].textStyle.fontName,
       size: props.textKey.textStyleRange[0].textStyle.size._value,
@@ -79,6 +78,7 @@ export async function LayerDataInit(LayerID: number): Promise<UILayerData> {
       type: props.textKey.textShape[0].char._value,
       color: await ColorDescToColorObj(props.textKey.textStyleRange[0].textStyle.color),
     };
+    console.log(props.textKey.textStyleRange[0].textStyle);
   }
 
   if (props.layerEffects !== undefined) {

@@ -7,9 +7,11 @@ export default function ColorField({ Color }: ColorFieldProps) {
   let hex = Color.hexValue;
 
   return (
-    <div style={{display: "flex", flexFlow: "row"}}>
-      <div className={'colorFieldSquare'} style={{background: Color.hexValue}}/>
+      <div style={{display: "flex", flexFlow: "row"}}>
+            <div className={'colorFieldSquare'} style={{background: Color.hexValue}}/>
+
+
       <sp-label> {hex} </sp-label>
-    </div>
+      </div>
   );
 }

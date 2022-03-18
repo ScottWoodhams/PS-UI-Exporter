@@ -1,6 +1,6 @@
 import { storage } from 'uxp';
 
-import { app, PsRGBColorSpace, RGBColor } from 'photoshop';
+import {app, LayerKind, LayerKindConsts, PsRGBColorSpace, RGBColor} from 'photoshop';
 import UILayerData from './UILayerData';
 import { ELayerType, Rect } from './PSTypes';
 import { ReadFromMetaData } from './Metadata';
@@ -76,6 +76,10 @@ export async function IsTexture(kind: ELayerType): Promise<boolean> {
     kind === ELayerType.vector ||
     kind === ELayerType.solidColor
   );
+}
+
+export async function IsTextureLayerObjKind(kind: LayerKindConsts): Promise<boolean> {
+  return (kind === 'pixel' || kind === 'smartObject' || kind === 'solidColor')
 }
 
 export async function GetTextureCount() {

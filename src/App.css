@@ -22,8 +22,9 @@
 }
 
 .colorFieldSquare {
-  height: 15px;
-  width: 15px;
+  height: 13px;
+  width: 13px;
+  outline: aliceblue solid 1px;
   margin-top: 5px;
   margin-right: 5px;
 
