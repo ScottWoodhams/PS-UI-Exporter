@@ -18,7 +18,7 @@ export function ExportPanel({ onFinished }: ExportPanelProps) {
   const [hasEmptyTextLayers, UpdateEmptyTextLayers] = useState(false);
   const [hasEmptySlices, UpdateEmptySlices] = useState(false);
   const [textureCount, UpdateTextureCount] = useState(0);
-  const [fonts, UpdateFontCount] = useState([])
+  const [fonts, UpdateFontCount] = useState([]);
 
   async function Finish() {
     await ExportProcess();
@@ -40,21 +40,18 @@ export function ExportPanel({ onFinished }: ExportPanelProps) {
   return (
     <div>
       <sp-heading> Validation</sp-heading>
-      <sp-divider size={'small'} children={undefined} />
-      <div className={"ValidationBox"}>
+      <Spectrum.Divider size="small" />
+      <div className="validationBox">
         <sp-label>Total Layers: {app.activeDocument.layers.length}</sp-label>
-        <br/>
         <sp-label> Has Dupes: {hasDupeLayerNames ? 'true' : 'false'} </sp-label>
-        <br/>
-
         <sp-label> Has Empty Layers: {hasEmptyLayers ? 'true' : 'false'} </sp-label>
         <sp-label> Has Empty Text Layers: {hasEmptyTextLayers ? 'true' : 'false'} </sp-label>
-        <sp-label> Has Invalid Slices: {hasEmptySlices ? 'true' : 'false'} </sp-label>
+        <sp-label> Invalid Slices: {hasEmptySlices ? 'true' : 'false'} </sp-label>
+        <sp-label>Fonts: {fonts}</sp-label>
+        <sp-label>Has Dupes: {hasDupeLayerNames ? 'true' : 'false'}</sp-label>
       </div>
-      {<sp-label> Texture count : {textureCount}</sp-label>}
-      <br/>
-      {<sp-label>Fonts: {fonts}</sp-label>}
-      {/*<Spectrum.ActionButton onClick={Finish}> Start Export</Spectrum.ActionButton>*/}
+      <Spectrum.Divider size="small" />
+      <Spectrum.ActionButton onClick={Finish}> Start Export</Spectrum.ActionButton>
     </div>
   );
 }
