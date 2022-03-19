@@ -43,6 +43,7 @@ export function ExportPanel({ onFinished }: ExportPanelProps) {
       <Spectrum.Divider size="small" />
       <div className="validationBox">
         <sp-label>Total Layers: {app.activeDocument.layers.length}</sp-label>
+        <sp-label>Texture Count: {textureCount}</sp-label>
         <sp-label> Has Dupes: {hasDupeLayerNames ? 'true' : 'false'} </sp-label>
         <sp-label> Has Empty Layers: {hasEmptyLayers ? 'true' : 'false'} </sp-label>
         <sp-label> Has Empty Text Layers: {hasEmptyTextLayers ? 'true' : 'false'} </sp-label>
