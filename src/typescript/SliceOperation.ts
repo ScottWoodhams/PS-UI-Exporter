@@ -4,6 +4,12 @@ import { Log, LogLevel } from './Logger';
 import * as PSTypes from './PSTypes';
 import { UpdateMetaProperty } from './Metadata';
 
+export enum SliceType {
+  None = 'None',
+  Fill = 'Fill',
+  Tiled = 'Tiled',
+}
+
 export enum Anchor {
   AnchorN = 'QCSSide0',
   AnchorW = 'QCSSide3',
@@ -208,7 +214,7 @@ export async function ExecuteSlice(
   await app.activeDocument.trim('transparent', true, true, true, true);
 }
 
-export async function ApplySlices(layer: Layer) {
+export async function ApplySlices(layer: Layer, sliceType: SliceType) {
   const topGuide = app.activeDocument.guides[0];
   const leftGuide = app.activeDocument.guides[1];
   const bottomGuide = app.activeDocument.guides[2];
@@ -228,7 +234,7 @@ export async function ApplySlices(layer: Layer) {
     commandName: 'Updating slice property',
   });
 
-  await core.executeAsModal(async () => UpdateMetaProperty(id, 'SliceType', 'Sliced'), {
+  await core.executeAsModal(async () => UpdateMetaProperty(id, 'SliceType', sliceType), {
     commandName: 'Updating slice property',
   });
 }
