@@ -3,14 +3,10 @@ import Spectrum from 'react-uxp-spectrum';
 import { action, app, core, Layer } from 'photoshop';
 
 import { ApplySlices, InitSlices, SliceType } from '../typescript/SliceOperation';
-import Spectrum from "react-uxp-spectrum/dist/Menu";
-import MenuEvent = Spectrum.MenuEvent;
 
 export type SlicePanelProps = { onFinished: () => void; layer: Layer };
 
-// todo improve ui
 // todo show slice values in ui
-// todo pick slice type
 
 export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
   const events: string[] = ['select'];
@@ -61,9 +57,9 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
     <div>
       <sp-heading size="S">Post-Slice Size</sp-heading>
       <Spectrum.Dropdown placeholder="Select Slice Type">
-        <Spectrum.Menu selectedIndex={0} onChange={(e: MenuEvent) => onDropdownChange(e.target.selectedIndex)}>
+        <Spectrum.Menu selectedIndex={0} onChange={e => onDropdownChange(e.target.selectedIndex)}>
           <Spectrum.MenuItem> None </Spectrum.MenuItem>
-          <Spectrum.MenuDivider children={undefined} />
+          <Spectrum.MenuDivider />
           <Spectrum.MenuItem> Fill </Spectrum.MenuItem>
           <Spectrum.MenuItem> Tiled </Spectrum.MenuItem>
         </Spectrum.Menu>
