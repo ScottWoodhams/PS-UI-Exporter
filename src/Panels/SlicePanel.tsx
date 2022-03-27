@@ -3,27 +3,52 @@ import Spectrum from 'react-uxp-spectrum';
 import { action, app, core, Layer } from 'photoshop';
 
 import { ApplySlices, InitSlices, SliceType } from '../typescript/SliceOperation';
+import { Slices } from '../typescript/PSTypes';
 
 export type SlicePanelProps = { onFinished: () => void; layer: Layer };
 
 // todo show slice values in ui
 
 export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
-  const events: string[] = ['select'];
+  const events: string[] = [ "historyStateChanged", "close"];
   const [sliceType, onSliceTypeSelected] = React.useState(SliceType.None);
+  const [guides, onGuidesUpdated] = React.useState({ top: 0, left: 0, bottom: 0, right: 0 });
 
   const ApplySlice = async () => {
     await ApplySlices(layer, sliceType);
     onFinished();
   };
 
-  const Exit = async () => {
-    await app.activeDocument.closeWithoutSaving();
-    onFinished();
-  };
-
   const Init = async () => {
     await InitSlices(layer);
+  };
+
+  const Cancel = async () =>{
+    await core.executeAsModal(async () => {
+      await app.activeDocument.closeWithoutSaving()
+    }, { commandName: 'Closing document' });
+
+  }
+
+  function UpdateGuidesUI() {
+    const slices: Slices = {
+      top: app.activeDocument.guides[0].coordinate,
+      left: app.activeDocument.guides[1].coordinate,
+      bottom: app.activeDocument.guides[2].coordinate,
+      right: app.activeDocument.guides[3].coordinate,
+    };
+
+    onGuidesUpdated(slices);
+  }
+
+  const eventHandler = (e, d) => {
+    console.log(e, d);
+    if (d.name === 'Drag Guide') {
+      UpdateGuidesUI();
+    }
+    else if (e === 'close'){
+      onFinished();
+    }
   };
 
   function onDropdownChange(selectedIndex: number) {
@@ -46,15 +71,17 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
   }
 
   useEffect(() => {
-    action.addNotificationListener(events, Exit);
+    action.addNotificationListener(events, eventHandler);
     core.executeAsModal(Init, { commandName: 'Performing slice setup' });
     return () => {
-      action.removeNotificationListener(events, Exit);
+      action.removeNotificationListener(events, eventHandler);
     };
   });
 
   return (
     <div>
+      <sp-label> Top: {guides.top}</sp-label>
+
       <sp-heading size="S">Post-Slice Size</sp-heading>
       <Spectrum.Dropdown placeholder="Select Slice Type">
         <Spectrum.Menu selectedIndex={0} onChange={e => onDropdownChange(e.target.selectedIndex)}>
@@ -64,6 +91,7 @@ export function SlicePanel({ onFinished, layer }: SlicePanelProps) {
           <Spectrum.MenuItem> Tiled </Spectrum.MenuItem>
         </Spectrum.Menu>
       </Spectrum.Dropdown>
+      <Spectrum.ActionButton onClick={Cancel}>Cancel</Spectrum.ActionButton>
 
       <Spectrum.ActionButton onClick={ApplySlice}>Slice</Spectrum.ActionButton>
     </div>

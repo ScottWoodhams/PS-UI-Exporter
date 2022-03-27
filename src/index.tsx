@@ -1,7 +1,7 @@
 import '@babel/polyfill';
 import React from 'react';
 import { entrypoints } from 'uxp';
-import {app, core} from 'photoshop';
+import {action, app, core} from 'photoshop';
 import App from './App';
 import PanelController from './Controllers/PanelController';
 import {LoggingMenuItem, MainPanelInvokeMenu} from './typescript/MenuFlyout';
@@ -13,9 +13,7 @@ async function testFun() {
   await core.showAlert({ message: 'Running Test Function' });
 }
 
-app.eventNotifier = (event, descriptor) => {
-  console.log(event, JSON.stringify(descriptor, null, ' '));
-}
+// @ts-ignore
 
 entrypoints.setup({
   commands: { runTests: RunTest, test: testFun },

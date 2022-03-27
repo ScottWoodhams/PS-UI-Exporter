@@ -14,7 +14,7 @@ export enum Panels {
 
 export default function App() {
   const [state, setState] = React.useState({
-    CurrentPanel: Panels.Export,
+    CurrentPanel: Panels.Action,
   });
 
   async function GoToActionPanel() {
