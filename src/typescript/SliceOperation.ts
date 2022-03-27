@@ -245,7 +245,7 @@ export async function InitSlices(layer: Layer) {
     fill: 'transparent',
     height: app.activeDocument.height,
     mode: 'RGBColorMode',
-    name: 'Image Export',
+    name: 'Slice Image',
     resolution: app.activeDocument.resolution,
     width: app.activeDocument.width,
   };
