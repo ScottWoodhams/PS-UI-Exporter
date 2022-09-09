@@ -1,5 +1,5 @@
 # Photoshop UI Exporter
-> Photoshop UXP pluing for exporting UI to be imported into the Unreal game engine
+> Photoshop UXP pluing for exporting UI to be imported into the Unreal game engine. Works in tandem with the [Unreal UI Importer](https://github.com/ScottWoodhams/UI-Importer-Unreal)
 
 ## Setup
 ```
