@@ -14,7 +14,6 @@ async function testFun() {
 }
 
 // @ts-ignore
-
 entrypoints.setup({
   commands: { runTests: RunTest, test: testFun },
   panels: {
