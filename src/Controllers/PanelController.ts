@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import {MenuItem} from '../typescript/MenuFlyout';
+import { MenuItem } from '../typescript/MenuFlyout';
 
 export type PanelControllerProps = { menuItems: MenuItem[]; invokeMenu: (id) => Promise<void> };
 

@@ -1,10 +1,9 @@
 import { entrypoints } from 'uxp';
 import photoshop from 'photoshop';
-import { CreateLogFile, DeleteLogFile, OpenLogFile } from './Logger';
 
 export type MenuItem = { id: string; label: string; submenu?: MenuItem[]; checked?: boolean; enabled?: boolean };
 
-export let LoggingMenuItem: MenuItem = {
+export const LoggingMenuItem: MenuItem = {
   id: 'logging',
   label: 'Logging',
   submenu: [
@@ -12,7 +11,6 @@ export let LoggingMenuItem: MenuItem = {
     { id: 'openLogFile', label: 'OpenLogFile', enabled: true },
   ],
 };
-
 
 export async function MainPanelInvokeMenu(id) {
   // does return a value but not documented
@@ -23,13 +21,13 @@ export async function MainPanelInvokeMenu(id) {
     case 'enableLogging':
       menuItems.getItem('enableLogging').checked = !menuItems.getItem('enableLogging').checked;
       if (menuItems.getItem('enableLogging').checked === true) {
-        await CreateLogFile();
+        // await CreateLogFile();
       } else {
-        await DeleteLogFile();
+        // await DeleteLogFile();
       }
       break;
     case 'openLogFile':
-      await OpenLogFile();
+      // await OpenLogFile();
       break;
     case 'about':
       await photoshop.app.showAlert('Thanks for trying this UXP plugin!');

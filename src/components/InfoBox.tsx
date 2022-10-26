@@ -43,8 +43,8 @@ export default function InfoBox({ data }: SliceRectProps) {
 
       {shadow && (
         <div style={{ flexFlow: 'column' }}>
-          <sp-heading size={'S'}>Shadow</sp-heading>
-          <sp-divider size={'small'} children={undefined} />
+          <sp-heading size='S'>Shadow</sp-heading>
+          <sp-divider size="small" children={undefined} />
           <sp-label>Distance: {shadow.distance}</sp-label>
           <br />
           <sp-label>Angle: {shadow.angle}</sp-label>

@@ -1,6 +1,5 @@
 import { action, app, core, Document, DocumentCreateOptions, Layer } from 'photoshop';
 import { Slices } from './PSTypes';
-import { Log, LogLevel } from './Logger';
 import * as PSTypes from './PSTypes';
 import { UpdateMetaProperty } from './Metadata';
 
@@ -60,7 +59,7 @@ export async function Select(Bounds: Slices) {
       {}
     );
   } catch (e) {
-    await Log(LogLevel.Error, e);
+    console.log(e);
   }
 }
 
@@ -82,7 +81,7 @@ export async function Deselect(id: number) {
       {}
     );
   } catch (e) {
-    await Log(LogLevel.Error, e);
+    console.log(e);
   }
 }
 
@@ -109,7 +108,7 @@ export async function TranslateSelection(Translation: Translation) {
       {}
     );
   } catch (e) {
-    await Log(LogLevel.Error, e);
+    console.log(e);
   }
 }
 
@@ -251,14 +250,9 @@ export async function InitSlices(layer: Layer) {
   };
 
   const exportDocument: Document = await app.createDocument(options);
-  if (exportDocument === null || undefined) {
-    await Log(LogLevel.Error, 'Slice Document is null');
-  }
 
   const duplicatedLayer: Layer = await layer.duplicate(exportDocument, 'placeAtBeginning');
-  if (duplicatedLayer === null || undefined) {
-    await Log(LogLevel.Error, 'Slice duplicated layer is null');
-  }
+
   await duplicatedLayer.rasterize('entire');
   await exportDocument.trim('transparent', true, true, true, true);
 
@@ -266,8 +260,4 @@ export async function InitSlices(layer: Layer) {
   exportDocument.guides.add('vertical', 0);
   exportDocument.guides.add('horizontal', exportDocument.height);
   exportDocument.guides.add('vertical', exportDocument.width);
-
-  if (exportDocument.guides.length !== 4) {
-    await Log(LogLevel.Error, '4 guides were not created for slicing');
-  }
 }

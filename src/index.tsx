@@ -1,11 +1,11 @@
 import '@babel/polyfill';
 import React from 'react';
 import { entrypoints } from 'uxp';
-import {action, app, core} from 'photoshop';
+import { core } from 'photoshop';
 import App from './App';
 import PanelController from './Controllers/PanelController';
-import {LoggingMenuItem, MainPanelInvokeMenu} from './typescript/MenuFlyout';
-import { RunTest } from './typescript/TestSuite';
+import { LoggingMenuItem, MainPanelInvokeMenu } from './typescript/MenuFlyout';
+
 
 console.clear();
 
@@ -15,8 +15,8 @@ async function testFun() {
 
 // @ts-ignore
 entrypoints.setup({
-  commands: { runTests: RunTest, test: testFun },
+  commands: { test: testFun },
   panels: {
-    MainPanel: PanelController(<App />, { menuItems: [ LoggingMenuItem ], invokeMenu: MainPanelInvokeMenu})
-  }
+    MainPanel: PanelController(<App />, { menuItems: [LoggingMenuItem], invokeMenu: MainPanelInvokeMenu }),
+  },
 });

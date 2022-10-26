@@ -1,7 +1,6 @@
-import { action, ActionDescriptor, app, core, ExecutionContext, Layer } from 'photoshop';
+import { action, app, core, Layer } from 'photoshop';
 import UILayerData, { LayerDataInit } from './UILayerData';
-import { Log, LogLevel } from './Logger';
-import { ColorDescToColorObj } from './Utilities';
+import { walkActionThroughLayers } from './Utilities';
 
 export async function WriteToMetaData(LayerId: number, data: UILayerData) {
   const content = JSON.stringify(data);
@@ -40,25 +39,18 @@ export async function ReadFromMetaData(LayerId: number) {
 }
 
 export async function InitLayers() {
-  const totalLayers: number = app.activeDocument.layers.length;
-  let layerCount = 0;
-
   await Promise.all(
     app.activeDocument.layers.map(async (layer: Layer) => {
-      layerCount += 1;
       const meta = await ReadFromMetaData(layer.id);
-      if (meta === "" || meta === undefined) {
+      if (meta === '' || meta === undefined) {
         const layerData: UILayerData = await LayerDataInit(layer.id);
         await WriteToMetaData(layer.id, layerData);
       }
     })
   );
-
-  await Log(LogLevel.Info, `Total Layers: ${totalLayers} Processed: ${layerCount}`);
 }
 
 export async function UpdateMetaProperty(LayerID: number, property: string, value: unknown) {
-  await Log(LogLevel.Info, `Updating Meta Property: ${property} New Value: ${value}`);
   const meta = await ReadFromMetaData(LayerID);
   const metaObj: UILayerData = JSON.parse(meta);
   metaObj[property] = value;
@@ -66,7 +58,6 @@ export async function UpdateMetaProperty(LayerID: number, property: string, valu
 }
 
 export async function GetMetaProperty(LayerID: number, property: string): Promise<unknown> {
-  await Log(LogLevel.Info, `Getting Meta Property: ${property}`);
   const meta: string = await ReadFromMetaData(LayerID);
   const metaObj: UILayerData = JSON.parse(meta);
   return metaObj[property];
@@ -95,13 +86,11 @@ async function ClearMetaData(LayerId: number) {
 }
 
 export async function RefreshAllLayers() {
-  await Promise.all(
-    app.activeDocument.layers.map(async (layer: Layer) => {
-      if (layer.kind !== 'group') {
-        await ClearMetaData(layer.id);
-        const layerData: UILayerData = await LayerDataInit(layer.id);
-        await WriteToMetaData(layer.id, layerData);
-      }
-    })
-  );
+  walkActionThroughLayers(app.activeDocument, async layer => {
+    if (layer.kind !== 'group') {
+      await ClearMetaData(layer.id);
+      const layerData: UILayerData = await LayerDataInit(layer.id);
+      await WriteToMetaData(layer.id, layerData);
+    }
+  });
 }

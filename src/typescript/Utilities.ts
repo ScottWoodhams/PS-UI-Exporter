@@ -1,20 +1,9 @@
 import { storage } from 'uxp';
-import photoshop, {
-  app,
-  Document,
-  Documents,
-  Layer,
-  LayerKind,
-  LayerKindConsts,
-  Layers,
-  PsRGBColorSpace,
-  RGBColor,
-} from 'photoshop';
-import UILayerData from './UILayerData';
-import { ELayerType, Rect } from './PSTypes';
-import { ReadFromMetaData } from './Metadata';
+import { Document, Layer, LayerKindConsts, PsRGBColorSpace, RGBColor } from 'photoshop';
+
 import * as uxp from 'uxp';
-import {Consta} = 'photoshop';
+import { Rect } from './PSTypes';
+
 
 /**
  * simplifying data for easier reading and exporting
@@ -64,62 +53,10 @@ export async function ColorDescToColorObj(value: PsRGBColorSpace) {
   return Color;
 }
 
-export async function WriteToJSONFile(jsonString: string, folder: uxp.storage.Folder) {
-  const saveOptions = { overwrite: true };
-  const jsonFile = await folder.createFile('PSJson.json', saveOptions);
 
-  const jsonWriteOptions = { format: storage.formats.utf8, append: false };
-  await jsonFile.write(jsonString, jsonWriteOptions);
-
-  return jsonFile;
-}
-
-/**
- * Checks if the layer can be exported as a texture based on its type
- * @param kind The kind of layer
- * @constructor
- */
-export async function IsTexture(kind: LayerKind): Promise<boolean> {
-  return (
-    kind === LayerKind.pixel ||
-    kind === ELayerType.smartObject ||
-    kind === ELayerType.vector ||
-    kind === ELayerType.solidColor
-  );
-}
 
 export async function IsTextureLayerObjKind(kind: LayerKindConsts): Promise<boolean> {
   return kind === 'pixel' || kind === 'smartObject' || kind === 'solidColor';
-}
-
-export async function GetTextureCount() {
-  const layers = app.activeDocument.layers;
-  let textureCount = 0;
-  for (let i = 0; i < layers.length; i++) {
-    const metaString: string = await ReadFromMetaData(layers[i].id);
-    const layerData: UILayerData = JSON.parse(metaString);
-    const isTexture: boolean = await IsTexture(layerData.LayerType);
-    if (isTexture) {
-      textureCount += 1;
-    }
-  }
-
-  return textureCount;
-}
-
-export async function GetFonts() {
-  const layers = app.activeDocument.layers;
-  let fonts = [];
-
-  for (let i = 0; i < layers.length; i++) {
-    const metaString: string = await ReadFromMetaData(layers[i].id);
-    const layerData: UILayerData = JSON.parse(metaString);
-    if (layerData.LayerType === ELayerType.text) {
-      fonts.push(layerData.TextDescriptor.fontName);
-    }
-  }
-
-  return fonts;
 }
 
 export function walkActionThroughLayers(parentLayer: Layer | Document, action: (Layer) => void) {
@@ -129,7 +66,6 @@ export function walkActionThroughLayers(parentLayer: Layer | Document, action: (
     curLayer = parentLayer.layers[i];
     action(curLayer);
     if (curLayer.kind === 'group') {
-      console.log(curLayer.layers.length);
       walkActionThroughLayers(curLayer, action);
     }
   }

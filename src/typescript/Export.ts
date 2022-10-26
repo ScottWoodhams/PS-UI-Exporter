@@ -1,9 +1,8 @@
 import { storage } from 'uxp';
-import photoshop, { app, core, Document, DocumentCreateOptions, ExecuteAsModalOptions, Layer } from 'photoshop';
-import { Log, LogLevel } from './Logger';
+import { app, core, Document, DocumentCreateOptions, ExecuteAsModalOptions, Layer } from 'photoshop';
 import UILayerData from './UILayerData';
 import { ReadFromMetaData } from './Metadata';
-import { IsTexture, walkActionThroughLayers, WriteToJSONFile } from './Utilities';
+import { IsTextureLayerObjKind, walkActionThroughLayers } from './Utilities';
 import * as PSTypes from './PSTypes';
 import { ExecuteSlice } from './SliceOperation';
 
@@ -14,7 +13,7 @@ import { ExecuteSlice } from './SliceOperation';
  * @param folder the folder to export to
  * @constructor
  */
-export async function ExportTexture(layerData: UILayerData, layer: Layer, folder: storage.Folder) {
+export async function ExportTexture(layerData: UILayerData, layer: Layer, folder) {
   const options: DocumentCreateOptions = {
     typename: '',
     fill: 'transparent',
@@ -49,54 +48,48 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
     await ExecuteSlice(layerData.Slices, exportDocument.width, exportDocument.height, exportDocument.id, 8);
   }
 
-  const pngFile: storage.File = await folder.createFile(`${layerData.Name}.png`, { overwrite: true });
-
-  if (pngFile === null) {
-    await core.showAlert({ message: `[Export ${layerData.Name}]  failed to create png file` });
-  } else {
-    await Log(LogLevel.Info, `Successfully created PNG file for: ${layerData.Name}`);
-  }
+  const pngFile = await folder.createFile(`${layerData.Name}.png`, { overwrite: true });
 
   await exportDocument.saveAs.png(pngFile);
 
   await exportDocument.closeWithoutSaving();
 }
 
+/**
+ * Runs the export process on each layer
+ * @constructor
+ */
 export async function ExportProcess() {
-  await Log(LogLevel.Info, 'Starting Export Process...');
   const initialDomain = { initialDomain: storage.domains.userDesktop };
   const folder = await storage.localFileSystem.getFolder(initialDomain);
 
   if (folder === undefined || null) {
-    await Log(LogLevel.Error, 'Export Folder is null or undefined');
+    return;
   }
 
   const data: UILayerData[] = [];
   walkActionThroughLayers(app.activeDocument, async layer => {
-    console.log(`Exporting Layer ${layer.name}`);
-
     const metaString: string = await ReadFromMetaData(layer.id);
-    if (metaString === null || undefined) {
-      console.log('Meta is null or undefined');
-    }
 
-    const layerData: UILayerData = JSON.parse(metaString);
-    data.push(layerData);
-    console.log(` Layer Type ${layer.kind}`);
+    if (metaString !== undefined) {
+      const layerData: UILayerData = JSON.parse(metaString);
 
-    const isTexture: boolean = await IsTexture(layer.kind);
+      data.push(layerData);
 
-    if (isTexture === true) {
-      console.log(`Layer "${layerData.Name}" is classed as texture`);
-
-      const options: ExecuteAsModalOptions = { commandName: 'Exporting texture' };
-      await core
-        .executeAsModal(() => {
-          return ExportTexture(layerData, layer, folder);
-        }, options)
-        .then();
+      if (await IsTextureLayerObjKind(layer.kind)) {
+        const options: ExecuteAsModalOptions = { commandName: 'Exporting texture' };
+        await core
+          .executeAsModal(() => {
+            return ExportTexture(layerData, layer, folder);
+          }, options)
+          .then();
+      }
     }
   });
 
-  await WriteToJSONFile(JSON.stringify(data), folder);
+  const saveOptions = { overwrite: true };
+  const jsonFile = await folder.createFile('PSJson.json', saveOptions);
+
+  const jsonWriteOptions = { format: storage.formats.utf8, append: false };
+  await jsonFile.write(JSON.stringify(data), jsonWriteOptions);
 }

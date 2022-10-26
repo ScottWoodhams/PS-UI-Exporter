@@ -1,23 +1,7 @@
 import { RGBColor } from 'photoshop';
 
-export enum ELayerType {
-  any = 0,
-  pixel = 1,
-  adjustment = 2,
-  text = 3,
-  vector = 4,
-  smartObject = 5,
-  video = 6,
-  group = 7,
-  threeD = 8,
-  gradient = 9,
-  pattern = 10,
-  solidColor = 11,
-  background = 12,
-  groupEnd = 13,
-}
-
 export type SliceType = 'None' | 'Sliced' | 'Tiled';
+export type LayerType = 'None' | 'Texture' | 'Text' | 'Component';
 
 export interface FrameFXDescriptor {
   size: number;
