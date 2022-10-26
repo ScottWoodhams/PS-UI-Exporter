@@ -1,9 +1,9 @@
 import { storage } from 'uxp';
-import { app, core, Document, DocumentCreateOptions, ExecuteAsModalOptions, Layer } from 'photoshop';
+import photoshop, { app, core, Document, DocumentCreateOptions, ExecuteAsModalOptions, Layer } from 'photoshop';
 import { Log, LogLevel } from './Logger';
 import UILayerData from './UILayerData';
 import { ReadFromMetaData } from './Metadata';
-import { IsTexture, WriteToJSONFile } from './Utilities';
+import { IsTexture, walkActionThroughLayers, WriteToJSONFile } from './Utilities';
 import * as PSTypes from './PSTypes';
 import { ExecuteSlice } from './SliceOperation';
 
@@ -28,21 +28,23 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   const exportDocument: Document = await app.createDocument(options);
 
   if (exportDocument === null) {
-    await Log(LogLevel.Error, 'ExportDocument is null');
+    await core.showAlert({ message: '[Export] export document is null' });
+    return;
   }
-  const duplicatedLayer = await layer.duplicate(exportDocument, "placeAtBeginning");
+
+  const duplicatedLayer = await layer.duplicate(exportDocument, 'placeAtBeginning');
 
   if (duplicatedLayer === null) {
-    await Log(LogLevel.Error, 'duplicated layer is null');
+    await core.showAlert({ message: '[Export] duplicated layer is null' });
+    return;
   }
 
-  await duplicatedLayer.rasterize('entire');
-  await duplicatedLayer.rasterize('layerStyle');
+  await exportDocument.rasterizeAllLayers();
   await exportDocument.trim('transparent', true, true, true, true);
 
   if (layerData.SliceType !== 'None') {
     if (layerData.Slices === <PSTypes.Slices>{ bottom: 0, left: 0, right: 0, top: 0 }) {
-      await Log(LogLevel.Warning, 'layer is sliced with slices all set to zero');
+      await core.showAlert({ message: `[Export] ${layerData.Name}layer is set to slice with 0 params` });
     }
     await ExecuteSlice(layerData.Slices, exportDocument.width, exportDocument.height, exportDocument.id, 8);
   }
@@ -50,10 +52,13 @@ export async function ExportTexture(layerData: UILayerData, layer: Layer, folder
   const pngFile: storage.File = await folder.createFile(`${layerData.Name}.png`, { overwrite: true });
 
   if (pngFile === null) {
-    await Log(LogLevel.Error, 'Failed to create png file');
+    await core.showAlert({ message: `[Export ${layerData.Name}]  failed to create png file` });
+  } else {
+    await Log(LogLevel.Info, `Successfully created PNG file for: ${layerData.Name}`);
   }
 
   await exportDocument.saveAs.png(pngFile);
+
   await exportDocument.closeWithoutSaving();
 }
 
@@ -67,31 +72,31 @@ export async function ExportProcess() {
   }
 
   const data: UILayerData[] = [];
-  await Promise.all(
-    app.activeDocument.layers.map(async (layer: Layer) => {
-      await Log(LogLevel.Info, `Exporting Layer ${layer.name}`);
-      const metaString: string = await ReadFromMetaData(layer.id);
-      if (metaString === null || undefined) {
-        await Log(LogLevel.Error, 'Meta is null or undefined');
-      }
-      const layerData: UILayerData = JSON.parse(metaString);
-      data.push(layerData);
+  walkActionThroughLayers(app.activeDocument, async layer => {
+    console.log(`Exporting Layer ${layer.name}`);
 
-      const isTexture: boolean = await IsTexture(layerData.LayerType);
-      await Log(LogLevel.Info, `Layer "${layerData.Name}"  is ${layerData.LayerType}`);
+    const metaString: string = await ReadFromMetaData(layer.id);
+    if (metaString === null || undefined) {
+      console.log('Meta is null or undefined');
+    }
 
-      if (isTexture === true) {
-        await Log(LogLevel.Info, `Layer "${layerData.Name}" is classed as texture`);
+    const layerData: UILayerData = JSON.parse(metaString);
+    data.push(layerData);
+    console.log(` Layer Type ${layer.kind}`);
 
-        const options: ExecuteAsModalOptions = { commandName: 'Exporting texture' };
-        await core
-          .executeAsModal(() => {
-            return ExportTexture(layerData, layer, folder);
-          }, options)
-          .then();
-      }
-    })
-  );
+    const isTexture: boolean = await IsTexture(layer.kind);
+
+    if (isTexture === true) {
+      console.log(`Layer "${layerData.Name}" is classed as texture`);
+
+      const options: ExecuteAsModalOptions = { commandName: 'Exporting texture' };
+      await core
+        .executeAsModal(() => {
+          return ExportTexture(layerData, layer, folder);
+        }, options)
+        .then();
+    }
+  });
 
   await WriteToJSONFile(JSON.stringify(data), folder);
 }

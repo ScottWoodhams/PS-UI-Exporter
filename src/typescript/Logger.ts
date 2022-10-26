@@ -1,9 +1,11 @@
 import { storage, shell, host } from 'uxp';
 import { core } from 'photoshop';
+import {ExportPanelProps} from "../Panels/ExportPanel";
 
 const LogFileName = 'UIExportLog.log';
 let LogFile: storage.File;
 let LogFolder: storage.Folder;
+let log = '';
 
 export enum LogLevel {
   Info = 'INFO',
@@ -12,10 +14,12 @@ export enum LogLevel {
 }
 
 export async function Log(Type: LogLevel, Message: string) {
-  if (LogFile !== undefined) {
-    const format = `${Type.toString()} ${Message} \n`;
-    LogFile.write(format, { format: storage.formats.utf8, append: true });
-  }
+  log += `${Type.toString()} ${Message} \n`;
+
+  // if (LogFile !== undefined) {
+  //   const format = `${Type.toString()} ${Message} \n`;
+  //   LogFile.write(format, { format: storage.formats.utf8, append: true });
+  // }
 }
 
 export async function CreateLogFile() {
@@ -44,4 +48,8 @@ export async function DeleteLogFile() {
 export async function OpenLogFile() {
   shell.openExternal(LogFile.nativePath);
   // await storage.localFileSystem.getFileForOpening();
+}
+
+export function getLog(): string {
+  return log;
 }

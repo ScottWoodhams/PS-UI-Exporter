@@ -1,10 +1,20 @@
 import { storage } from 'uxp';
-
-import {app, LayerKind, LayerKindConsts, PsRGBColorSpace, RGBColor} from 'photoshop';
+import photoshop, {
+  app,
+  Document,
+  Documents,
+  Layer,
+  LayerKind,
+  LayerKindConsts,
+  Layers,
+  PsRGBColorSpace,
+  RGBColor,
+} from 'photoshop';
 import UILayerData from './UILayerData';
 import { ELayerType, Rect } from './PSTypes';
 import { ReadFromMetaData } from './Metadata';
 import * as uxp from 'uxp';
+import {Consta} = 'photoshop';
 
 /**
  * simplifying data for easier reading and exporting
@@ -69,9 +79,9 @@ export async function WriteToJSONFile(jsonString: string, folder: uxp.storage.Fo
  * @param kind The kind of layer
  * @constructor
  */
-export async function IsTexture(kind: ELayerType): Promise<boolean> {
+export async function IsTexture(kind: LayerKind): Promise<boolean> {
   return (
-    kind === ELayerType.pixel ||
+    kind === LayerKind.pixel ||
     kind === ELayerType.smartObject ||
     kind === ELayerType.vector ||
     kind === ELayerType.solidColor
@@ -79,7 +89,7 @@ export async function IsTexture(kind: ELayerType): Promise<boolean> {
 }
 
 export async function IsTextureLayerObjKind(kind: LayerKindConsts): Promise<boolean> {
-  return (kind === 'pixel' || kind === 'smartObject' || kind === 'solidColor')
+  return kind === 'pixel' || kind === 'smartObject' || kind === 'solidColor';
 }
 
 export async function GetTextureCount() {
@@ -110,4 +120,17 @@ export async function GetFonts() {
   }
 
   return fonts;
+}
+
+export function walkActionThroughLayers(parentLayer: Layer | Document, action: (Layer) => void) {
+  let curLayer: Layer;
+
+  for (let i = 0; i < parentLayer.layers.length; i++) {
+    curLayer = parentLayer.layers[i];
+    action(curLayer);
+    if (curLayer.kind === 'group') {
+      console.log(curLayer.layers.length);
+      walkActionThroughLayers(curLayer, action);
+    }
+  }
 }
