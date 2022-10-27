@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { MenuItem } from '../typescript/MenuFlyout';
+
 
 export type PanelControllerProps = { menuItems: MenuItem[]; invokeMenu: (id) => Promise<void> };
 
@@ -24,8 +24,6 @@ export default function PanelController(component: JSX.Element, { menuItems, inv
         attachment.appendChild(root);
       }
     },
-    menuItems,
-    invokeMenu,
   };
 
   return controller;

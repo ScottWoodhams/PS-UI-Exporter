@@ -13,25 +13,10 @@
   padding: 12px;
 }
 
-.InitPanel {
-  background: none;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-items: stretch;
-}
+.LayerInfoBox {
+  background-color: #2f2f2f;
+  border-radius: 1px;
+  border-width:5px;
+  height: 50%;
 
-.colorFieldSquare {
-  height: 13px;
-  width: 13px;
-  outline: aliceblue solid 1px;
-  margin-top: 5px;
-  margin-right: 5px;
-
-}
-
-.validationBox {
-  display: flex;
-  flex-direction: column;
-  flex-basis: content;
 }

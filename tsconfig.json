@@ -11,7 +11,7 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "typeRoots": [
-             "node_modules/@adobe-uxp-types/"
+             "node_modules/@types/photoshop/"
         ],
         "lib": [
             "esnext",
