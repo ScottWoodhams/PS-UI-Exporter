@@ -1,0 +1,9 @@
+.Panel {
+    padding: 16px
+}
+
+.layerInfoBox {
+    border: 1px solid #808080;
+    border-radius: 4px;
+    padding: 16px;
+}
