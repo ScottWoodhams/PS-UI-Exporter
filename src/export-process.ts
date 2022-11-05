@@ -1,7 +1,17 @@
+import { walkActionThroughLayers } from "./Utilities";
+import { app } from "photoshop";
 
 
 export function RunExport(){
-  console.log("Run Export")
+walkActionThroughLayers(app.activeDocument, (layer) => {
+
+  // create json object
+  let layerData = {
+
+  }
+
+
+})
 
 
 }

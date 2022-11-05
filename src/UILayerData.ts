@@ -1,3 +1,4 @@
+
 export class Slices {
 
   top: number;
@@ -20,8 +21,6 @@ export class Slices {
   static Zero(): Slices {
     return new Slices(0,0,0,0);
   }
-
-
 }
 
 

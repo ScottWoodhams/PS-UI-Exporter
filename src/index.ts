@@ -24,7 +24,7 @@ const layerInfoBox: HTMLElement = document.getElementById("layerInfoBox");
 //Event Listening
 const listener = async (event: string, data: any) => {
   if (event === "select") {
-    await UpdateDisplay(layerInfoBox);
+    //await UpdateDisplay(layerInfoBox);
   }
   console.log(event, data);
 };
