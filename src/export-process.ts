@@ -6,8 +6,9 @@ import {Slices} from "./slices";
 import {Layer} from "photoshop/dom/Layer";
 import {storage} from "uxp"
 import {DocumentCreateOptions} from "photoshop/dom/objects/CreateOptions";
-import {DocumentFill, ElementPlacement, NewDocumentMode, TrimType} from "photoshop/dom/Constants";
+import {DocumentFill, ElementPlacement, NewDocumentMode} from "photoshop/dom/Constants";
 import {RunSliceProcess} from "./slice-execution";
+
 
 
 /**
@@ -44,6 +45,11 @@ async function Internal_RunExport() {
 
 }
 
+/*
+Have to declare trim type here due to module import error using the enum in the constants type package
+ */
+export enum TrimType {TRANSPARENT = "transparent"}
+
 async function ExportTexture(layer: Layer, slices: Slices, folder: storage.Folder) {
     const options: DocumentCreateOptions = {
         typename: '',
@@ -59,9 +65,10 @@ async function ExportTexture(layer: Layer, slices: Slices, folder: storage.Folde
     await layer.duplicate(exportDocument, ElementPlacement.PLACEATBEGINNING);
     app.activeDocument = exportDocument;
     await exportDocument.rasterizeAllLayers();
-    await exportDocument.trim(TrimType.TRANSPARENT, true, true, true, true);
 
-    //Run slicing operation if slices are not zero
+
+    await exportDocument.trim(TrimType.TRANSPARENT);
+
     if(slices !== Slices.Zero) {
         await RunSliceProcess(slices);
     }

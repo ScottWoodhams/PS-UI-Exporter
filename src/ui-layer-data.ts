@@ -11,11 +11,18 @@ export class UILayerData {
     Type: any;
     ComponentName: string;
     Slices: Slices;
-    TextData: TextDescriptor;
+    TextDescriptor: TextDescriptor;
 
     constructor(layer: Layer) {
 
+        this.Name = layer.name;
+        this.Bounds = layer.bounds;
 
+        //Todo setup data getters
+        this.Type = "Todo"
+        this.ComponentName = "Todo"
+        this.Slices = Slices.Zero;
+        this.TextDescriptor = new TextDescriptor(layer);
 
     }
 

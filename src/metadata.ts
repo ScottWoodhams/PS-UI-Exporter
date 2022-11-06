@@ -95,21 +95,21 @@ async function Internal_ReadMetaData(LayerId: number): Promise<string> {
 //   await UpdateMetaProperty(LayerID, 'IsComponent', true);
 // }
 
-async function ClearMetaData(LayerId: number) {
-  const command = {
-    _obj: 'set',
-    _target: [
-      { _ref: 'property', _property: 'XMPMetadataAsUTF8' },
-      { _ref: 'layer', _id: LayerId },
-    ],
-    to: {
-      _obj: 'layer',
-      XMPMetadataAsUTF8: '',
-    },
-    options: { failOnMissingProperty: true, failOnMissingElement: true },
-  };
-
-  await action.batchPlay([command], {});
-}
+// async function ClearMetaData(LayerId: number) {
+//   const command = {
+//     _obj: 'set',
+//     _target: [
+//       { _ref: 'property', _property: 'XMPMetadataAsUTF8' },
+//       { _ref: 'layer', _id: LayerId },
+//     ],
+//     to: {
+//       _obj: 'layer',
+//       XMPMetadataAsUTF8: '',
+//     },
+//     options: { failOnMissingProperty: true, failOnMissingElement: true },
+//   };
+//
+//   await action.batchPlay([command], {});
+// }
 
 
