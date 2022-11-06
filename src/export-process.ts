@@ -7,6 +7,10 @@ walkActionThroughLayers(app.activeDocument, (layer) => {
 
   // create json object
   let layerData = {
+    name: "",
+    Type: "",
+    Slices: "",
+
 
   }
 

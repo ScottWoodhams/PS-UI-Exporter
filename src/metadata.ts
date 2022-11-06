@@ -1,8 +1,19 @@
 import {action, app, core} from 'photoshop';
-import {UILayerData} from "./UILayerData";
-import {ActionDescriptor, ExecutionContext} from "photoshop/dom/CoreModules";
+import { Slices } from './slices';
 
-export async function WriteToMetaData(LayerId: number, data: UILayerData)
+export class Metadata {
+
+  ComponentName: string;
+  Slices: Slices;
+
+  constructor(){
+    this.ComponentName = "Not Component"
+    this.Slices = Slices.Zero;
+  }
+
+}
+
+export async function WriteToMetaData(LayerId: number, data: Metadata)
 {
   await core.executeAsModal(() => Internal_WriteToMetaData(LayerId, data), { commandName: '' })
 }
@@ -12,7 +23,7 @@ export async function ReadMetaData(LayerId: number): Promise<string>
   return Internal_ReadMetaData(LayerId);
 }
 
-async function Internal_WriteToMetaData(LayerId: number, data: UILayerData) {
+async function Internal_WriteToMetaData(LayerId: number, data: Metadata) {
 
 
   const content = JSON.stringify(data);

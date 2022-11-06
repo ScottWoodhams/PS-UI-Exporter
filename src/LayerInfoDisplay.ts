@@ -1,24 +1,36 @@
 import {app} from "photoshop";
 import {Layer} from "photoshop/dom/Layer";
-import {ReadMetaData} from "./metadata";
-import {Slices, UILayerData} from "./UILayerData";
+import {Metadata, ReadMetaData} from "./metadata";
 import { IsTexture } from "./Utilities";
+import {Slices} from "./slices";
 
 
 export async function UpdateDisplay(display: HTMLElement) {
   let info: string = "";
   let layer: Layer = app.activeDocument.activeLayers[0];
 
-  if(layer !== null){
+  if(layer !== null) {
     let meta: string = await ReadMetaData(layer.id);
-    let data: UILayerData = JSON.parse(meta);
-    let slices = data.Slices ?  Slices.Zero().Print() : data.Slices.Print();
+
+    let data: Metadata;
+
+    if(meta === undefined){
+      data = new Metadata();
+      data.ComponentName = "Not Component";
+      data.Slices = Slices.Zero;
+    }
+    else
+    {
+      data = JSON.parse(meta);
+    }
+
+    let slices: string = data.Slices.Print;
 
     info = `
-            ${layer.name} <br />
-            ${layer.kind} <br />
-            ${slices} <br />
-            ${data.ComponentName} <br />
+            Name: ${layer.name} <br />
+            Kind: ${layer.kind} <br />
+            Slices: ${slices} <br />
+            IsTexture: ${IsTexture(layer)} <br />
             ${layer.kind} <br />`;
   }
 

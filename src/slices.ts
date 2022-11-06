@@ -1,11 +1,11 @@
 
 export class Slices {
 
+
   top: number;
   right: number;
   bottom: number;
   left: number;
-
 
   constructor(top: number, right: number, bottom: number, left: number) {
     this.top = top;
@@ -14,19 +14,13 @@ export class Slices {
     this.left = left;
   }
 
-   Print() {
+  get Print() {
     return `Top: ${this.top}, Right: ${this.right}, Bottom: ${this.bottom}, Left: ${this.left}`;
+
   }
 
-  static Zero(): Slices {
+  static get Zero(): Slices {
     return new Slices(0,0,0,0);
   }
 }
 
-
-export class UILayerData {
-
-  ComponentName: string;
-  Slices: Slices;
-
-}
