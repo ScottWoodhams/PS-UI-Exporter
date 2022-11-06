@@ -1,10 +1,14 @@
 import {IsTexture, walkActionThroughLayers} from "./Utilities";
 import {app, core} from "photoshop";
+import {Document} from "photoshop/dom/Document";
 import {UILayerData} from "./ui-layer-data";
 import {Slices} from "./slices";
 import {Layer} from "photoshop/dom/Layer";
 import {storage} from "uxp"
-import {ExecutionContext} from "photoshop/dom/CoreModules";
+import {DocumentCreateOptions} from "photoshop/dom/objects/CreateOptions";
+import {DocumentFill, ElementPlacement, NewDocumentMode, TrimType} from "photoshop/dom/Constants";
+import {RunSliceProcess} from "./slice-execution";
+
 
 /**
  * Runs the export process on each layer via modal execution
@@ -14,7 +18,7 @@ export function RunExport() {
     core.executeAsModal(Internal_RunExport, {commandName: 'Running Export'});
 }
 
-async function Internal_RunExport(executionContext: ExecutionContext) {
+async function Internal_RunExport() {
 
     let layerList: UILayerData[] = null;
     const initialDomain = {initialDomain: storage.domains.userDesktop};
@@ -25,13 +29,13 @@ async function Internal_RunExport(executionContext: ExecutionContext) {
         return;
     }
 
-    walkActionThroughLayers(app.activeDocument, (layer) => {
+    walkActionThroughLayers(app.activeDocument, async (layer) => {
 
         let data = new UILayerData(layer);
         layerList.push(data);
 
         if (IsTexture(layer)) {
-            ExportTexture(layer, data.Slices, folder);
+            await ExportTexture(layer, data.Slices, folder);
         }
     })
 
@@ -40,6 +44,30 @@ async function Internal_RunExport(executionContext: ExecutionContext) {
 
 }
 
-function ExportTexture(layer: Layer, slices: Slices, folder: storage.Folder) {
-    console.log(`${layer.name} | ${slices.Print} | ${folder.name}`);
+async function ExportTexture(layer: Layer, slices: Slices, folder: storage.Folder) {
+    const options: DocumentCreateOptions = {
+        typename: '',
+        fill: DocumentFill.TRANSPARENT,
+        height: app.activeDocument.height,
+        mode: NewDocumentMode.RGB,
+        name: 'Image Export',
+        resolution: app.activeDocument.resolution,
+        width: app.activeDocument.width,
+    };
+
+    const exportDocument: Document = await app.createDocument(options);
+    await layer.duplicate(exportDocument, ElementPlacement.PLACEATBEGINNING);
+    app.activeDocument = exportDocument;
+    await exportDocument.rasterizeAllLayers();
+    await exportDocument.trim(TrimType.TRANSPARENT, true, true, true, true);
+
+    //Run slicing operation if slices are not zero
+    if(slices !== Slices.Zero) {
+        await RunSliceProcess(slices);
+    }
+
+    //due to inaccurate typing with uxp, we use the 'any' type
+    const pngFile : any = await folder.createFile(`${layer.name}.png`, { overwrite: true });
+    await exportDocument.saveAs.png(pngFile);
+    await exportDocument.closeWithoutSaving();
 }
