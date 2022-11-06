@@ -15,6 +15,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "react-uxp-spectrum": "^0.1.10"
+    "react-uxp-spectrum": "^0.1.10",
+    "uxp-types": "^0.1.2"
   }
 }
