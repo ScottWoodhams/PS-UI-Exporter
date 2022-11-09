@@ -1,13 +1,14 @@
-import {IsTexture, walkActionThroughLayers} from "./Utilities";
+import {walkActionThroughLayers} from "./Utilities";
 import {app, core} from "photoshop";
 import {Document} from "photoshop/dom/Document";
-import {UILayerData} from "./ui-layer-data";
-import {Slices} from "./slices";
+import {UILayerData} from "./classes/ui-layer-data";
+import {Slices} from "./classes/slices";
 import {Layer} from "photoshop/dom/Layer";
 import {storage} from "uxp"
 import {DocumentCreateOptions} from "photoshop/dom/objects/CreateOptions";
 import {DocumentFill, ElementPlacement, NewDocumentMode} from "photoshop/dom/Constants";
 import {RunSliceProcess} from "./slice-execution";
+
 
 
 
@@ -35,9 +36,9 @@ async function Internal_RunExport() {
         let data = new UILayerData(layer);
         layerList.push(data);
 
-        if (IsTexture(layer)) {
-            await ExportTexture(layer, data.Slices, folder);
-        }
+        // if (IsTexture(layer)) {
+        //     await ExportTexture(layer, data.Slices, folder);
+        // }
     })
 
     const jsonFile: storage.File = await folder.createFile('PSJson.json', {overwrite: true});

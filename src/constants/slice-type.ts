@@ -1,0 +1,1 @@
+export enum SliceType { Sliced = "Sliced", Tiled = "Tiled"}

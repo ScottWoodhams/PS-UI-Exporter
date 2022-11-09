@@ -1,19 +1,8 @@
 import {action, app, core} from 'photoshop';
-import { Slices } from './slices';
 import {walkActionThroughLayers} from "./Utilities";
 import {Layer} from "photoshop/dom/Layer";
+import {Metadata} from "./classes/metadata";
 
-export class Metadata {
-
-  ComponentName: string;
-  Slices: Slices;
-
-  constructor(){
-    this.ComponentName = "Not Component"
-    this.Slices = Slices.Zero;
-  }
-
-}
 
 export async function WriteToMetaData(LayerId: number, data: Metadata)
 {

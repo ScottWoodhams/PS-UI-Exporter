@@ -1,8 +1,8 @@
 import {SliceSetupInitialise} from "./slice-setup";
 import {ComponentSetupInitialise} from "./component-setup";
 import {RunExport} from "./export-process";
-import {UpdateDisplay} from "./LayerInfoDisplay";
-import {ClearAllData} from "./metadata";
+import {UpdateDisplay} from "./layer-info-display";
+import {ClearAllData} from "./metadata-functions";
 
 // HTML Element setup
 

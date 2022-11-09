@@ -1,6 +1,7 @@
 import {app} from "photoshop";
-import {Metadata, WriteToMetaData} from "./metadata";
-import {Slices} from "./slices";
+import {WriteToMetaData} from "./metadata-functions";
+import {Slices} from "./classes/slices";
+import {Metadata} from "./classes/metadata";
 
 
 export async function ComponentSetupInitialise() {
