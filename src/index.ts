@@ -2,6 +2,7 @@ import {SliceSetupInitialise} from "./slice-setup";
 import {ComponentSetupInitialise} from "./component-setup";
 import {RunExport} from "./export-process";
 import {UpdateDisplay} from "./LayerInfoDisplay";
+import {ClearAllData} from "./metadata";
 
 // HTML Element setup
 
@@ -17,6 +18,8 @@ btnSetComponent.addEventListener("click", ComponentSetupInitialise);
 const btnSetExport: HTMLElement = document.getElementById("btnExport");
 btnSetExport.addEventListener("click", RunExport);
 
+const btnClearAll: HTMLElement = document.getElementById("btnClearAll")
+btnClearAll.addEventListener("click", ClearAllData);
 
 const layerInfoBox: HTMLElement = document.getElementById("layerInfoBox");
 

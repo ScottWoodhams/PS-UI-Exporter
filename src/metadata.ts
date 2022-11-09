@@ -1,5 +1,7 @@
 import {action, app, core} from 'photoshop';
 import { Slices } from './slices';
+import {walkActionThroughLayers} from "./Utilities";
+import {Layer} from "photoshop/dom/Layer";
 
 export class Metadata {
 
@@ -21,6 +23,16 @@ export async function WriteToMetaData(LayerId: number, data: Metadata)
 export async function ReadMetaData(LayerId: number): Promise<string>
 {
   return Internal_ReadMetaData(LayerId);
+}
+
+export async function ClearAllData(){
+  await core.executeAsModal(async () => {
+    return walkActionThroughLayers(app.activeDocument, (layer: Layer) =>{
+      ClearMetaData(layer.id);
+    })
+    },
+    { commandName: '' })
+
 }
 
 async function Internal_WriteToMetaData(LayerId: number, data: Metadata) {
@@ -95,21 +107,21 @@ async function Internal_ReadMetaData(LayerId: number): Promise<string> {
 //   await UpdateMetaProperty(LayerID, 'IsComponent', true);
 // }
 
-// async function ClearMetaData(LayerId: number) {
-//   const command = {
-//     _obj: 'set',
-//     _target: [
-//       { _ref: 'property', _property: 'XMPMetadataAsUTF8' },
-//       { _ref: 'layer', _id: LayerId },
-//     ],
-//     to: {
-//       _obj: 'layer',
-//       XMPMetadataAsUTF8: '',
-//     },
-//     options: { failOnMissingProperty: true, failOnMissingElement: true },
-//   };
-//
-//   await action.batchPlay([command], {});
-// }
+async function ClearMetaData(LayerId: number) {
+  const command = {
+    _obj: 'set',
+    _target: [
+      { _ref: 'property', _property: 'XMPMetadataAsUTF8' },
+      { _ref: 'layer', _id: LayerId },
+    ],
+    to: {
+      _obj: 'layer',
+      XMPMetadataAsUTF8: '',
+    },
+    options: { failOnMissingProperty: true, failOnMissingElement: true },
+  };
+
+  await action.batchPlay([command], {});
+}
 
 

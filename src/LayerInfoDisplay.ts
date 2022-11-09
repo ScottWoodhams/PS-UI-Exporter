@@ -14,24 +14,22 @@ export async function UpdateDisplay(display: HTMLElement) {
 
     let data: Metadata;
 
-    if(meta === undefined){
-      data = new Metadata();
-      data.ComponentName = "Not Component";
-      data.Slices = Slices.Zero;
-    }
-    else
-    {
-      data = JSON.parse(meta);
-    }
-
-    let slices: string = data.Slices.Print;
-
-    info = `
-            Name: ${layer.name} <br />
-            Kind: ${layer.kind} <br />
-            Slices: ${slices} <br />
-            IsTexture: ${IsTexture(layer)} <br />
-            ${layer.kind} <br />`;
+    // if(meta === undefined){
+    //   data = new Metadata();
+    // }
+    // else
+    // {
+    //   data = JSON.parse(meta);
+    // }
+    //
+    // let slices: string = data.Slices.Print;
+    //
+    // info = `
+    //         Name: ${layer.name} <br />
+    //         Kind: ${layer.kind} <br />
+    //         Slices: ${slices} <br />
+    //         IsTexture: ${IsTexture(layer)} <br />
+    //         ${layer.kind} <br />`;
   }
 
 
