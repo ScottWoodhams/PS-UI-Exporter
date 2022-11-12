@@ -21,7 +21,7 @@ export async function UpdateDisplay(display: HTMLElement) {
 
     let position: string = GetLayerPosition(layer)?.Print();
     let size: string = GetLayerSize(layer)?.Print();
-    let exportAs = GetExportType(layer);
+    let exportAs = await GetExportType(layer);
 
     baseInfo = `
             Position: ${position} <br />

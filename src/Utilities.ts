@@ -16,7 +16,7 @@ export function walkActionThroughLayers(parentLayer: Layer | Document, action: (
   }
 }
 
-export function GetExportType(layer: Layer): ExportType {
+export async function GetExportType(layer: Layer): Promise<ExportType> {
 
   switch (layer.kind) {
     case LayerKind.BLACKANDWHITE:       return ExportType.None;
