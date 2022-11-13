@@ -1,13 +1,16 @@
-import { Slices } from "./slices";
+import { SliceDescriptor } from "./slices";
 
+/*
+    This class defines the data that is stored in the layer
+ */
 export class Metadata {
 
     ComponentName: string;
-    Slices: Slices;
+    Slices: SliceDescriptor;
 
     constructor(){
         this.ComponentName = "Not Component"
-        this.Slices = Slices.Zero;
+        this.Slices = SliceDescriptor.Zero;
     }
 
 }

@@ -17,6 +17,6 @@ export class TextDescriptor {
     shadowColor: RGBColor;
 
     constructor(layer: Layer) {
-        //TODO setup text descriptor getters
+        //Todo
     }
 }
